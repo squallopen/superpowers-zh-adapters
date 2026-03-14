@@ -1,0 +1,86 @@
+[
+  {
+    "name": "brainstorming",
+    "summary_zh": "需求澄清、方案探索、设计权衡",
+    "phrases": ["头脑风暴", "想方案", "需求澄清", "设计讨论", "方案对比", "先别写代码"],
+    "example_cn": "这个功能先别急着写，先一起想一下方案和边界。"
+  },
+  {
+    "name": "dispatching-parallel-agents",
+    "summary_zh": "多任务并行拆分、并行代理调度",
+    "phrases": ["并行处理", "拆给多个 agent", "多代理并行", "并行推进", "分头处理"],
+    "example_cn": "这几个子任务互不依赖，帮我拆给多个 agent 并行处理。"
+  },
+  {
+    "name": "executing-plans",
+    "summary_zh": "按既定计划执行实现",
+    "phrases": ["执行计划", "按计划做", "照着计划实现", "继续执行", "落地计划"],
+    "example_cn": "计划已经有了，按计划继续实现。"
+  },
+  {
+    "name": "finishing-a-development-branch",
+    "summary_zh": "分支收尾、合并或提 PR 决策",
+    "phrases": ["开发收尾", "结束这个分支", "准备提 PR", "合并分支", "收尾清理"],
+    "example_cn": "这个功能做完了，帮我决定是提 PR、合并还是先保留分支。"
+  },
+  {
+    "name": "receiving-code-review",
+    "summary_zh": "处理收到的代码审查意见",
+    "phrases": ["处理 review 意见", "回应代码审查", "看 review 评论", "消化审查反馈", "修 review"],
+    "example_cn": "我收到一批 code review 评论，先帮我判断哪些该改、哪些不合理。"
+  },
+  {
+    "name": "requesting-code-review",
+    "summary_zh": "请求代码审查、提交前自查",
+    "phrases": ["帮我 review", "请求代码审查", "代码评审", "提交前检查", "过一遍改动"],
+    "example_cn": "这个改动准备提交了，先帮我做一次代码审查。"
+  },
+  {
+    "name": "subagent-driven-development",
+    "summary_zh": "按计划拆给子代理执行开发",
+    "phrases": ["子代理开发", "多 agent 开发", "拆任务实现", "分 agent 做", "按计划分工开发"],
+    "example_cn": "按这个计划拆任务，让子代理分头开发。"
+  },
+  {
+    "name": "systematic-debugging",
+    "summary_zh": "系统化排障、定位根因",
+    "phrases": ["系统排查", "调 bug", "定位问题", "排障", "查根因", "为什么挂了"],
+    "example_cn": "这个测试一直偶发失败，别直接猜修复，先系统排查根因。"
+  },
+  {
+    "name": "test-driven-development",
+    "summary_zh": "测试先行、红绿重构",
+    "phrases": ["TDD", "测试先行", "先写测试", "红绿重构", "先补 failing test"],
+    "example_cn": "这个 bug 用 TDD 修，先写失败测试再改实现。"
+  },
+  {
+    "name": "using-git-worktrees",
+    "summary_zh": "用 git worktree 做隔离工作区",
+    "phrases": ["git worktree", "开新工作树", "隔离工作区", "独立目录开发", "新 worktree"],
+    "example_cn": "这个需求单独开一个 git worktree 做，别污染当前目录。"
+  },
+  {
+    "name": "using-superpowers",
+    "summary_zh": "先确定工作流和应使用的 skill",
+    "phrases": ["先选工作流", "该用哪个 skill", "启用 superpowers", "按 superpowers 来", "先判断流程"],
+    "example_cn": "这件事先按 superpowers 工作流来，你先判断该用哪些 skill。"
+  },
+  {
+    "name": "verification-before-completion",
+    "summary_zh": "完成前验证、交付前确认",
+    "phrases": ["完成前验证", "交付前检查", "别急着说好了", "验证通过再收尾", "最终确认"],
+    "example_cn": "先跑完验证再说修好了，不要直接下结论。"
+  },
+  {
+    "name": "writing-plans",
+    "summary_zh": "编写实施计划、拆步骤",
+    "phrases": ["写计划", "实施计划", "拆步骤", "任务拆解", "技术方案计划", "施工计划"],
+    "example_cn": "先把这个需求拆成实施计划和可执行步骤。"
+  },
+  {
+    "name": "writing-skills",
+    "summary_zh": "编写、更新、验证 skill",
+    "phrases": ["写 skill", "改 skill", "做技能", "更新 agent skill", "验证 skill"],
+    "example_cn": "帮我给这个 agent 写一个新 skill，并验证触发描述够不够好。"
+  }
+]

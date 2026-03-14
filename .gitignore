@@ -1,0 +1,18 @@
+# Local validation and scratch directories
+sandbox*
+tmp/
+
+# OS noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+
+# Avoid nested repository metadata if vendor is refreshed from a clone
+vendor/superpowers/.git/
+vendor/superpowers.incoming-*/
+vendor/superpowers.backup-*/
