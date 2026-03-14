@@ -10,22 +10,22 @@
 
 ## Skill 矩阵
 
-| Upstream skill | Cline | Droid | OpenCode | CodeBuddy | 说明 |
-| --- | --- | --- | --- | --- | --- |
-| `brainstorming` | 原生 | 原生 | 原生 | 原生 | 需求澄清、方案对比、设计权衡可直接复用。 |
-| `dispatching-parallel-agents` | 降级 | 适配 | 适配 | 降级 | Cline 更偏并行调研；OpenCode 可借助 `plan`/`build` agent；CodeBuddy 保守按“隔离面并行”理解。 |
-| `executing-plans` | 原生 | 原生 | 原生 | 原生 | 已有计划后的执行流程在四宿主都可直接使用。 |
-| `finishing-a-development-branch` | 原生 | 原生 | 原生 | 原生 | 分支收尾、PR 决策、合并策略都与宿主弱相关。 |
-| `receiving-code-review` | 原生 | 原生 | 原生 | 原生 | Review 反馈处理流程基本不依赖宿主特性。 |
-| `requesting-code-review` | 原生 | 原生 | 原生 | 原生 | 请求审查、自查、整理结论的流程可直接复用。 |
-| `subagent-driven-development` | 降级 | 适配 | 适配 | 降级 | Cline/CodeBuddy 里最终仍建议主线程集成；Droid/OpenCode 更接近 upstream 的任务拆分预期。 |
-| `systematic-debugging` | 原生 | 原生 | 原生 | 原生 | 系统排障、证据优先的流程宿主无关。 |
-| `test-driven-development` | 原生 | 原生 | 原生 | 原生 | TDD 红绿重构循环可直接复用。 |
-| `using-git-worktrees` | 原生 | 原生 | 原生 | 原生 | Git worktree 操作和宿主绑定较弱。 |
-| `using-superpowers` | 适配 | 适配 | 适配 | 适配 | 都需要宿主级 bootstrap 说明、中文触发映射和 `superpowers-` 命名空间。 |
-| `verification-before-completion` | 原生 | 原生 | 原生 | 原生 | 完成前验证要求一致。 |
-| `writing-plans` | 原生 | 原生 | 原生 | 原生 | 写实施计划、拆步骤的模式通用。 |
-| `writing-skills` | 适配 | 适配 | 适配 | 适配 | skill 编写方法能复用，但每个宿主的落盘结构不同。 |
+| Upstream skill | 适合什么情况用 | Cline | Droid | OpenCode | CodeBuddy | 说明 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `brainstorming` | 新需求刚来，需求还模糊，先做需求分析、总体设计、详细设计时。 | 原生 | 原生 | 原生 | 原生 | 需求澄清、方案对比、设计权衡可直接复用。 |
+| `dispatching-parallel-agents` | 几个子任务互不依赖，想并行调研、并行写草稿、并行做侦察时。 | 降级 | 适配 | 适配 | 降级 | Cline 更偏并行调研；OpenCode 可借助 `plan`/`build` agent；CodeBuddy 保守按“隔离面并行”理解。 |
+| `executing-plans` | 计划已经写好，不想再讨论，直接按步骤往下做时。 | 原生 | 原生 | 原生 | 原生 | 已有计划后的执行流程在四宿主都可直接使用。 |
+| `finishing-a-development-branch` | 功能做完准备收尾，想决定提 PR、合并、继续留分支还是补清理时。 | 原生 | 原生 | 原生 | 原生 | 分支收尾、PR 决策、合并策略都与宿主弱相关。 |
+| `receiving-code-review` | 已经收到了 review 意见，想判断哪些该改、怎么改、哪些可以解释回去时。 | 原生 | 原生 | 原生 | 原生 | Review 反馈处理流程基本不依赖宿主特性。 |
+| `requesting-code-review` | 改动准备提交，想先做一次代码评审、自查风险、找明显问题时。 | 原生 | 原生 | 原生 | 原生 | 请求审查、自查、整理结论的流程可直接复用。 |
+| `subagent-driven-development` | 需求和计划已经比较清楚，想拆给多个 agent 分头实现再回主线程整合时。 | 降级 | 适配 | 适配 | 降级 | Cline/CodeBuddy 里最终仍建议主线程集成；Droid/OpenCode 更接近 upstream 的任务拆分预期。 |
+| `systematic-debugging` | 问题反复出现、原因不明、日志混乱，不能靠猜，只能系统排查根因时。 | 原生 | 原生 | 原生 | 原生 | 系统排障、证据优先的流程宿主无关。 |
+| `test-driven-development` | 新功能、修 bug、补回归时，想先写单元测试再写实现时。 | 原生 | 原生 | 原生 | 原生 | TDD 红绿重构循环可直接复用。 |
+| `using-git-worktrees` | 这个需求不想污染当前目录，想开隔离工作区并行开发或实验时。 | 原生 | 原生 | 原生 | 原生 | Git worktree 操作和宿主绑定较弱。 |
+| `using-superpowers` | 不确定现在该先分析、先写计划、先调试还是先 review，想先选工作流时。 | 适配 | 适配 | 适配 | 适配 | 都需要宿主级 bootstrap 说明、中文触发映射和 `superpowers-` 命名空间。 |
+| `verification-before-completion` | 准备说“做完了”之前，想先跑单元测试、集成测试、构建和验收检查时。 | 原生 | 原生 | 原生 | 原生 | 完成前验证要求一致。 |
+| `writing-plans` | 需求和方案差不多定了，下一步要写实施计划、任务拆解、开发步骤时。 | 原生 | 原生 | 原生 | 原生 | 写实施计划、拆步骤的模式通用。 |
+| `writing-skills` | 你不是在做业务功能，而是在写、改、验证 agent skill 本身时。 | 适配 | 适配 | 适配 | 适配 | skill 编写方法能复用，但每个宿主的落盘结构不同。 |
 
 ## 安装行为
 
