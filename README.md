@@ -28,6 +28,14 @@
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 ```
 
+执行前，脚本会先展示两行版本信息：
+
+- 当前已装的 upstream 版本
+- 这次准备安装的 upstream 版本
+
+版本展示会优先用 upstream 的版本 tag；如果有日期，也会一起带上。
+拿不到 tag 时才退回 commit；再拿不到才显示“未知”。
+
 安装到当前项目，不装到用户目录：
 
 ```powershell
@@ -40,11 +48,16 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 pwsh .\scripts\powershell\update-all.ps1 -Targets All -Scope User
 ```
 
+这个命令会先提醒你“这是更新，会覆盖已有 superpowers 安装”；确认后才继续。想在无人值守场景里自动继续，可以额外加 `-AssumeYes`。
+
 上游 `obra/superpowers` 更新了，刷新 vendored upstream 再重装：
 
 ```powershell
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ```
+
+这个命令同样会先确认，再执行覆盖式重装；只有加了 `-AssumeYes` 才会跳过确认。
+默认会优先刷新到 upstream 最新版本 tag，不是直接追 `main`。
 
 如果你手上已经有一个新的 upstream 本地 checkout：
 
@@ -57,8 +70,8 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 | 脚本 | 用途 |
 | --- | --- |
 | `scripts/powershell/install-all.ps1` | 用当前仓库里的内容安装到宿主 |
-| `scripts/powershell/update-all.ps1` | 先更新这个适配仓库，再调用 `scripts/powershell/install-all.ps1` |
-| `scripts/powershell/refresh-upstream-and-reinstall.ps1` | 先把 `vendor/superpowers` 刷到最新 upstream，再强制重装 |
+| `scripts/powershell/update-all.ps1` | 先更新这个适配仓库，确认后再按“覆盖更新”方式重装 |
+| `scripts/powershell/refresh-upstream-and-reinstall.ps1` | 先把 `vendor/superpowers` 刷到最新 upstream，确认后再按“覆盖更新”方式重装 |
 | `scripts/powershell/Refresh-VendoredSuperpowers.ps1` | 只刷新 `vendor/superpowers`，不安装 |
 
 如果你只是普通使用者，常用的是前两个。
@@ -80,6 +93,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - `Droid` / `OpenCode`：只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
 - `CodeBuddy`：只改 `CODEBUDDY.md` 里我们自己加进去的那一段
 - `CodeBuddy` 的 `.codebuddy/settings.json`：如果你已经写了 `language`，脚本会保留原值，不会硬改
+- 如果 `AGENTS.md` / `CODEBUDDY.md` 里我们那一段的开始和结束标记不完整、重复、顺序不对，脚本会直接停下来，不会硬写，避免把你的文件弄乱
 
 当前 `Cline` 专用 rule 文件名是：
 
@@ -108,11 +122,32 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - `CodeBuddy` 的 `CODEBUDDY.md`
 - `CodeBuddy` 的 `.codebuddy/settings.json`（仅在脚本准备补 `language` 时）
 
+如果脚本发现某个宿主里已经装过我们的 superpowers skill，它不会再一条条刷很多 `WARNING`，而是会按宿主只问你一次：
+
+- 输入 `YES`：覆盖旧的 superpowers skill，脚本会先自动备份
+- 输入 `SKIP`：保留旧的，只补缺少的
+- 输入别的内容：直接取消
+
+只有两种情况会跳过这一步确认：
+
+- 你明确传了 `-Force`
+- 你明确传了 `-AssumeYes`
+
+如果脚本在覆盖旧 skill 时自动删除失败，也不会继续硬装，而是会：
+
+1. 直接告诉你删哪个目录
+2. 等你手工删完后输入 `YES`
+3. 确认目录真的没了，再继续
+
+如果你用了 `-AssumeYes`，脚本没法等你现场确认，这种情况下会直接退出，并提示你先手工删除再重跑。
+
 如果脚本发现你机器上还有旧版 `Cline` 规则文件，它不会替你乱删，而是会：
 
 1. 先帮你备份旧文件
 2. 告诉你怎么自己看、自己合并
 3. 等你确认后再继续
+
+`update-all.ps1` 和 `refresh-upstream-and-reinstall.ps1` 这两个“更新型”命令，也会先单独提醒一次“接下来会覆盖已有 superpowers 安装”；确认后才继续。
 
 ## 这个仓库现在做到什么程度
 
@@ -193,11 +228,19 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User -VendorRoot $
 - `User` scope 是“当前登录用户”，不是整台机器所有账号。
 - 当前官方只维护 `Windows + PowerShell 7 + Git for Windows` 这条脚本链路。
 - `Cline` 现在使用专用 rule 文件名，避免撞上你原来常见的 `00-*` / `10-*` 规则文件。
-- `Droid` / `OpenCode` / `CodeBuddy` 的说明文件不会整文件盖掉；但如果你手改了我们自己那一段，重装时那一段会被更新。
+- `Droid` / `OpenCode` / `CodeBuddy` 的说明文件不会整文件盖掉；正常重装时只会更新我们自己那一段。
+- 如果 `AGENTS.md` / `CODEBUDDY.md` 里我们那一段标记异常，脚本会直接停下来，避免误追加第二份或误覆盖你的内容。
+- 安装前会先显示“当前已装版本”和“准备安装版本”；优先显示版本 tag，并尽量把日期也带上。
 - 如果你已经在 `.codebuddy/settings.json` 里设置了 `language`，脚本会保留你的值；想切成中文请自己改成 `简体中文`。
 - `Cline` 通过 `prompt.md` 工作，所以它一定是复制安装。
 - `OpenCode` 虽然是单文件 skill 入口，但 companion 目录也会一起复制，用来承接 `references/`、`scripts/` 等资源。
 - `CodeBuddy` 的项目级结构是官方公开文档确认过的；用户级 `~/.codebuddy` 路径是兼容写法。
+
+想让仓库里的 `vendor/superpowers` 也带上可识别的上游版本记录，最稳妥的方式是执行一次：
+
+```powershell
+pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
+```
 
 ## 继续看文档
 

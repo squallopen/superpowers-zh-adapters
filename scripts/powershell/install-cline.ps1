@@ -76,23 +76,46 @@ $legacyRuleFileNames = @(
     "05-skill-triggers-zh-cn.md",
     "10-output-docs-zh-cn.md"
 )
+$metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
 Ensure-Directory -Path $targetRuleRoot
 
+$skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
 $skipped = New-Object System.Collections.Generic.List[string]
+$existingSkillTargets = @(
+    $skillDirectories | ForEach-Object {
+        Join-Path $targetSkillRoot (Get-InstalledSkillName -OriginalName $_.Name -NamePrefix $NamePrefix)
+    } | Where-Object { Test-Path -LiteralPath $_ }
+)
+$sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -RepositoryUrl $RepositoryUrl
+$currentInstalledVersion = Get-InstalledSuperpowersVersionText `
+    -MetadataRoot $metadataRoot `
+    -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-SuperpowersVersionBanner `
+    -HostName "Cline" `
+    -CurrentInstalledVersion $currentInstalledVersion `
+    -PlannedVersion ([string]$sourceVersionInfo["Display"])
+$overwriteExistingSkills = Resolve-ExistingSkillAction `
+    -HostName "Cline" `
+    -ExistingPaths $existingSkillTargets `
+    -Force:$Force `
+    -AssumeYes:$AssumeYes
 
-foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot) {
+if ($overwriteExistingSkills) {
+    Backup-ExistingTargets -HostName "Cline" -Paths $existingSkillTargets | Out-Null
+}
+
+foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot $installedName
 
     if (Test-Path -LiteralPath $targetSkillPath) {
-        if ($Force) {
-            Remove-ExistingTarget -Path $targetSkillPath
+        if ($overwriteExistingSkills) {
+            Remove-ExistingTarget -Path $targetSkillPath -AssumeYes:$AssumeYes
         }
         else {
-            Write-Warning "Skipping existing Cline skill: $targetSkillPath"
             $skipped.Add($installedName)
             continue
         }
@@ -126,7 +149,7 @@ $tokens = @{
 foreach ($legacyRuleFileName in $legacyRuleFileNames) {
     $legacyRulePath = Join-Path $targetRuleRoot $legacyRuleFileName
     if (Test-Path -LiteralPath $legacyRulePath) {
-        Backup-ExistingFile -Path $legacyRulePath -Reason "Backing up old Cline rule file before manual review." | Out-Null
+        Backup-ExistingFile -Path $legacyRulePath -Reason "准备人工检查旧版 Cline 规则文件，先备份。" | Out-Null
 
         Confirm-UserMergeAction `
             -Title "发现旧版 Cline 规则文件：$legacyRulePath" `
@@ -160,7 +183,7 @@ $managedRulePaths = @(
 )
 
 foreach ($managedRulePath in $managedRulePaths) {
-    Backup-ExistingFile -Path $managedRulePath -Reason "Updating dedicated Cline superpowers rule file." | Out-Null
+    Backup-ExistingFile -Path $managedRulePath -Reason "更新 Cline 专用 superpowers 规则文件前先备份。" | Out-Null
 }
 
 $bootstrapRule = Expand-TemplateFile `
@@ -176,11 +199,38 @@ Set-Content -LiteralPath (Join-Path $targetRuleRoot $ruleFileNames.Output) -Valu
 $triggerRule = New-ClineChineseTriggerRule -TriggerData $triggerData -NamePrefix $NamePrefix
 Set-Content -LiteralPath (Join-Path $targetRuleRoot $ruleFileNames.Trigger) -Value $triggerRule -Encoding utf8
 
+$versionInfoToRecord = $null
+if (($existingSkillTargets.Count -gt 0) -and (-not $overwriteExistingSkills)) {
+    if ($installed.Count -gt 0) {
+        $versionInfoToRecord = @{
+            Display = "混合版本（保留旧安装，只补装了缺少的 skill）"
+            Commit = ""
+            CommitShort = ""
+            Ref = ""
+            RepositoryUrl = [string]$sourceVersionInfo["RepositoryUrl"]
+            IsKnown = $false
+        }
+    }
+}
+else {
+    $versionInfoToRecord = $sourceVersionInfo
+}
+
+if ($versionInfoToRecord) {
+    Save-SuperpowersInstallMetadata `
+        -MetadataRoot $metadataRoot `
+        -HostName "Cline" `
+        -VersionInfo $versionInfoToRecord `
+        -SourceRoot $sourceRoot `
+        -SkillCount ($installed.Count + $skipped.Count) `
+        -NamePrefix $NamePrefix
+}
+
 Write-Host ""
-Write-Host "Cline installation complete."
-Write-Host "Source:      $sourceRoot"
-Write-Host "Skills:      $targetSkillRoot"
-Write-Host "Rules:       $targetRuleRoot"
-Write-Host "Rule files:  $($ruleFileNames.Bootstrap), $($ruleFileNames.Trigger), $($ruleFileNames.Output)"
-Write-Host "Installed:   $($installed.Count)"
-Write-Host "Skipped:     $($skipped.Count)"
+Write-Host "Cline 安装完成。"
+Write-Host "来源：        $sourceRoot"
+Write-Host "Skill 目录：   $targetSkillRoot"
+Write-Host "规则目录：     $targetRuleRoot"
+Write-Host "规则文件：     $($ruleFileNames.Bootstrap), $($ruleFileNames.Trigger), $($ruleFileNames.Output)"
+Write-Host "已安装：       $($installed.Count)"
+Write-Host "已跳过：       $($skipped.Count)"

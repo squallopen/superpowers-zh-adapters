@@ -34,10 +34,15 @@
 
 - 不要整文件覆盖用户现有的 `AGENTS.md`、`CODEBUDDY.md`
 - 这类说明文件只允许改我们自己加进去的那一段
+- 如果我们那一段的开始/结束标记不完整、重复、顺序异常，脚本要直接停止，不能猜着写
 - `CodeBuddy` 的 `.codebuddy/settings.json` 不要强改用户已经存在的 `language`
 - `Cline` 不要占用通用规则文件名，避免撞用户已有的 `00-*`、`10-*` 规则
 - 改动前先自动备份
 - 如果遇到旧版遗留文件、格式冲突、或看不准是不是用户自己写的内容，先告诉用户怎么合并，再等用户确认
+- 如果某个宿主里已经装过我们的 superpowers skill，默认按宿主只问一次：覆盖、只补缺少的、或取消；不要刷一长串吓人的 warning
+- `update-all.ps1` 和 `refresh-upstream-and-reinstall.ps1` 这种“更新型”入口，要先明确提醒“接下来会覆盖已有 superpowers 安装”，确认后再继续；只有 `-AssumeYes` 才能跳过这一步
+- 安装前先展示“当前已装 upstream 版本”和“本次准备安装的 upstream 版本”；优先显示版本 tag，并尽量带上日期；拿不到时再明确显示未知
+- 如果覆盖旧 skill 时自动删除失败，不要继续硬装；要提示用户手工删除，再等用户确认
 
 推荐备份这些文件：
 
@@ -61,6 +66,13 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 
 推荐先装到一个临时项目里验证，再决定是否推用户级目录。
 
+说明：
+
+- 不加 `-Force` 时，如果宿主里已经有 superpowers skill，脚本会提示你选覆盖、只补缺少的、或取消
+- 加 `-Force` 代表你就是要直接覆盖，不再二次确认
+- 加 `-AssumeYes` 代表需要自动确认，适合脚本化场景
+- 如果 `-Force` / `-AssumeYes` 过程中删除旧 skill 失败，脚本应该停下来报清楚，不要偷偷跳过
+
 ### 2. 同步 upstream
 
 如果 `obra/superpowers` 更新了，优先用完整刷新流程：
@@ -68,6 +80,8 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 ```powershell
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\sandbox
 ```
+
+默认会优先取 upstream 最新版本 tag，不直接追 `main`；只有你显式传 `-Ref main` 时才会用 `main`。
 
 如果你已经有一个本地 upstream checkout：
 
@@ -108,6 +122,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 - `Droid`、`OpenCode`、`CodeBuddy` 通过 overlay / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
 - `Cline` 使用专用规则文件名 `90-superpowers-*.md`，不再占用早期那组通用文件名
+- `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出我们自己那一段时才会更新；识别不准就停下来
 
 如果要改这类行为，先看：
 
@@ -171,7 +186,10 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 另外要检查：
 
 - `AGENTS.md` / `CODEBUDDY.md` 是否只改了我们自己那一段
+- 如果手工制造半截标记或重复标记，脚本是否会停止，而不是继续往里写
 - `.codebuddy/settings.json` 如果原来已有 `language`，脚本是否只告警而没有强改
+- 安装前是否能正确展示“当前已装版本”和“准备安装版本”
+- 如果旧 skill 删除失败，脚本是否会提示手工删除并等待确认
 
 ## 发布流程
 

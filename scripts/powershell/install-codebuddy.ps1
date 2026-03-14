@@ -32,7 +32,7 @@ else {
 }
 
 if ($InstallMode -eq "Junction" -and -not [string]::IsNullOrWhiteSpace($NamePrefix)) {
-    throw "Junction mode cannot rename installed skills. Use -NamePrefix '' or switch to -InstallMode Copy."
+    throw "Junction 模式下不能重命名已安装的 skill。请改用 -NamePrefix ''，或者切换到 -InstallMode Copy。"
 }
 
 if (-not $VendorRoot) {
@@ -74,22 +74,45 @@ else {
 $overlayRoot = Join-Path $repoRoot "templates/codebuddy/skill-overlays"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
+$metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
 
+$skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
 $skipped = New-Object System.Collections.Generic.List[string]
+$existingSkillTargets = @(
+    $skillDirectories | ForEach-Object {
+        Join-Path $targetSkillRoot (Get-InstalledSkillName -OriginalName $_.Name -NamePrefix $NamePrefix)
+    } | Where-Object { Test-Path -LiteralPath $_ }
+)
+$sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -RepositoryUrl $RepositoryUrl
+$currentInstalledVersion = Get-InstalledSuperpowersVersionText `
+    -MetadataRoot $metadataRoot `
+    -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-SuperpowersVersionBanner `
+    -HostName "CodeBuddy" `
+    -CurrentInstalledVersion $currentInstalledVersion `
+    -PlannedVersion ([string]$sourceVersionInfo["Display"])
+$overwriteExistingSkills = Resolve-ExistingSkillAction `
+    -HostName "CodeBuddy" `
+    -ExistingPaths $existingSkillTargets `
+    -Force:$Force `
+    -AssumeYes:$AssumeYes
 
-foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot) {
+if ($overwriteExistingSkills) {
+    Backup-ExistingTargets -HostName "CodeBuddy" -Paths $existingSkillTargets | Out-Null
+}
+
+foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot $installedName
 
     if (Test-Path -LiteralPath $targetSkillPath) {
-        if ($Force) {
-            Remove-ExistingTarget -Path $targetSkillPath
+        if ($overwriteExistingSkills) {
+            Remove-ExistingTarget -Path $targetSkillPath -AssumeYes:$AssumeYes
         }
         else {
-            Write-Warning "Skipping existing CodeBuddy skill: $targetSkillPath"
             $skipped.Add($installedName)
             continue
         }
@@ -144,7 +167,7 @@ if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $instructionsBlock = $instructionsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
-Backup-ExistingFile -Path $instructionsPath -Reason "Updating CodeBuddy instructions section." | Out-Null
+Backup-ExistingFile -Path $instructionsPath -Reason "更新 CodeBuddy 说明段前先备份。" | Out-Null
 
 Upsert-ManagedBlock `
     -Path $instructionsPath `
@@ -153,7 +176,7 @@ Upsert-ManagedBlock `
 
 $settings = Get-JsonObject -Path $settingsPath
 if (-not $settings.ContainsKey("language")) {
-    Backup-ExistingFile -Path $settingsPath -Reason "Adding default CodeBuddy language setting." | Out-Null
+    Backup-ExistingFile -Path $settingsPath -Reason "准备补充 CodeBuddy 默认语言设置，先备份。" | Out-Null
     $settings["language"] = "简体中文"
     Save-JsonObject -Path $settingsPath -Data $settings
 }
@@ -161,11 +184,38 @@ elseif ($settings["language"] -ne "简体中文") {
     Write-Warning "CodeBuddy 里已经有 language='$($settings["language"])'，脚本不会改它。想改成中文的话，请你自己把 .codebuddy/settings.json 里的 language 改成 '简体中文'。"
 }
 
+$versionInfoToRecord = $null
+if (($existingSkillTargets.Count -gt 0) -and (-not $overwriteExistingSkills)) {
+    if ($installed.Count -gt 0) {
+        $versionInfoToRecord = @{
+            Display = "混合版本（保留旧安装，只补装了缺少的 skill）"
+            Commit = ""
+            CommitShort = ""
+            Ref = ""
+            RepositoryUrl = [string]$sourceVersionInfo["RepositoryUrl"]
+            IsKnown = $false
+        }
+    }
+}
+else {
+    $versionInfoToRecord = $sourceVersionInfo
+}
+
+if ($versionInfoToRecord) {
+    Save-SuperpowersInstallMetadata `
+        -MetadataRoot $metadataRoot `
+        -HostName "CodeBuddy" `
+        -VersionInfo $versionInfoToRecord `
+        -SourceRoot $sourceRoot `
+        -SkillCount ($installed.Count + $skipped.Count) `
+        -NamePrefix $NamePrefix
+}
+
 Write-Host ""
-Write-Host "CodeBuddy installation complete."
-Write-Host "Source:        $sourceRoot"
-Write-Host "Skills:        $targetSkillRoot"
-Write-Host "Instructions:  $instructionsPath"
-Write-Host "Settings:      $settingsPath"
-Write-Host "Installed:     $($installed.Count)"
-Write-Host "Skipped:       $($skipped.Count)"
+Write-Host "CodeBuddy 安装完成。"
+Write-Host "来源：          $sourceRoot"
+Write-Host "Skill 目录：     $targetSkillRoot"
+Write-Host "说明文件：       $instructionsPath"
+Write-Host "设置文件：       $settingsPath"
+Write-Host "已安装：         $($installed.Count)"
+Write-Host "已跳过：         $($skipped.Count)"

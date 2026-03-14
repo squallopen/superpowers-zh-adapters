@@ -39,7 +39,9 @@
 - 写入 `90-superpowers-bootstrap.md`
 - 写入 `91-superpowers-skill-triggers-zh-cn.md`
 - 写入 `92-superpowers-output-docs-zh-cn.md`
-- 不覆盖其他 rule 文件；如果检测到早期版本留下的 `00/05/10` 旧文件，只告警，用户自己决定是否删除
+- 安装前会先显示“当前已装版本”和“准备安装版本”
+- 不覆盖其他 rule 文件；如果检测到早期版本留下的 `00/05/10` 旧文件，会先备份，再提醒用户自己决定是否删除
+- 如果发现已经装过 superpowers skill，会按宿主只问一次：覆盖、只补缺少的、或取消
 
 ### `scripts/powershell/install-droid.ps1`
 
@@ -49,6 +51,10 @@
 - 对 `using-superpowers`、`dispatching-parallel-agents`、`subagent-driven-development` 注入宿主 overlay
 - 只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
 - 如果原文件已存在，改之前会先在旁边备份一份
+- 安装前会先显示“当前已装版本”和“准备安装版本”
+- 如果 `AGENTS.md` 里我们那一段的标记异常，脚本会直接停止，避免误覆盖
+- 如果发现已经装过 superpowers skill，会按宿主只问一次：覆盖、只补缺少的、或取消
+- 如果覆盖旧 skill 时自动删除失败，会提示用户手工删除并确认后再继续
 
 ### `scripts/powershell/install-opencode.ps1`
 
@@ -59,6 +65,10 @@
 - 入口文件会把本地引用改写到 companion 目录，避免相对路径失效
 - 只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
 - 如果原文件已存在，改之前会先在旁边备份一份
+- 安装前会先显示“当前已装版本”和“准备安装版本”
+- 如果 `AGENTS.md` 里我们那一段的标记异常，脚本会直接停止，避免误覆盖
+- 如果发现已经装过 superpowers skill，会按宿主只问一次：覆盖、只补缺少的、或取消
+- 如果覆盖旧 skill 时自动删除失败，会提示用户手工删除并确认后再继续
 
 ### `scripts/powershell/install-codebuddy.ps1`
 
@@ -70,6 +80,10 @@
 - 如果 `.codebuddy/settings.json` 已经有 `language`，会保留原值并提示用户手动处理
 - 改 `CODEBUDDY.md` 或 `.codebuddy/settings.json` 前会先在旁边备份一份
 - 用户级 `~/.codebuddy` 路径属于兼容性镜像写法；官方公开文档主要覆盖项目级结构
+- 安装前会先显示“当前已装版本”和“准备安装版本”
+- 如果 `CODEBUDDY.md` 里我们那一段的标记异常，脚本会直接停止，避免误覆盖
+- 如果发现已经装过 superpowers skill，会按宿主只问一次：覆盖、只补缺少的、或取消
+- 如果覆盖旧 skill 时自动删除失败，会提示用户手工删除并确认后再继续
 
 ## 有意不做的事
 

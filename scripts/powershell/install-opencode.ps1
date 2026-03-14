@@ -68,24 +68,52 @@ else {
 $overlayRoot = Join-Path $repoRoot "templates/opencode/skill-overlays"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
+$metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
 
+$skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
 $skipped = New-Object System.Collections.Generic.List[string]
+$existingSkillTargets = @(
+    foreach ($skillDirectory in $skillDirectories) {
+        $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
+        $targetSkillPath = Join-Path $targetSkillRoot ("{0}.md" -f $installedName)
+        $targetResourcePath = Join-Path $targetSkillRoot $installedName
 
-foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot) {
+        if (Test-Path -LiteralPath $targetSkillPath) { $targetSkillPath }
+        if (Test-Path -LiteralPath $targetResourcePath) { $targetResourcePath }
+    }
+)
+$sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -RepositoryUrl $RepositoryUrl
+$currentInstalledVersion = Get-InstalledSuperpowersVersionText `
+    -MetadataRoot $metadataRoot `
+    -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-SuperpowersVersionBanner `
+    -HostName "OpenCode" `
+    -CurrentInstalledVersion $currentInstalledVersion `
+    -PlannedVersion ([string]$sourceVersionInfo["Display"])
+$overwriteExistingSkills = Resolve-ExistingSkillAction `
+    -HostName "OpenCode" `
+    -ExistingPaths $existingSkillTargets `
+    -Force:$Force `
+    -AssumeYes:$AssumeYes
+
+if ($overwriteExistingSkills) {
+    Backup-ExistingTargets -HostName "OpenCode" -Paths $existingSkillTargets | Out-Null
+}
+
+foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot ("{0}.md" -f $installedName)
     $targetResourcePath = Join-Path $targetSkillRoot $installedName
 
     if ((Test-Path -LiteralPath $targetSkillPath) -or (Test-Path -LiteralPath $targetResourcePath)) {
-        if ($Force) {
-            Remove-ExistingTarget -Path $targetSkillPath
-            Remove-ExistingTarget -Path $targetResourcePath
+        if ($overwriteExistingSkills) {
+            Remove-ExistingTarget -Path $targetSkillPath -AssumeYes:$AssumeYes
+            Remove-ExistingTarget -Path $targetResourcePath -AssumeYes:$AssumeYes
         }
         else {
-            Write-Warning "Skipping existing OpenCode skill: $targetSkillPath"
             $skipped.Add($installedName)
             continue
         }
@@ -143,17 +171,44 @@ if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $agentsBlock = $agentsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
-Backup-ExistingFile -Path $agentsPath -Reason "Updating OpenCode AGENTS.md superpowers section." | Out-Null
+Backup-ExistingFile -Path $agentsPath -Reason "更新 OpenCode 的 AGENTS.md 中 superpowers 说明段前先备份。" | Out-Null
 
 Upsert-ManagedBlock `
     -Path $agentsPath `
     -BlockId "superpowers-opencode" `
     -Content $agentsBlock
 
+$versionInfoToRecord = $null
+if (($existingSkillTargets.Count -gt 0) -and (-not $overwriteExistingSkills)) {
+    if ($installed.Count -gt 0) {
+        $versionInfoToRecord = @{
+            Display = "混合版本（保留旧安装，只补装了缺少的 skill）"
+            Commit = ""
+            CommitShort = ""
+            Ref = ""
+            RepositoryUrl = [string]$sourceVersionInfo["RepositoryUrl"]
+            IsKnown = $false
+        }
+    }
+}
+else {
+    $versionInfoToRecord = $sourceVersionInfo
+}
+
+if ($versionInfoToRecord) {
+    Save-SuperpowersInstallMetadata `
+        -MetadataRoot $metadataRoot `
+        -HostName "OpenCode" `
+        -VersionInfo $versionInfoToRecord `
+        -SourceRoot $sourceRoot `
+        -SkillCount ($installed.Count + $skipped.Count) `
+        -NamePrefix $NamePrefix
+}
+
 Write-Host ""
-Write-Host "OpenCode installation complete."
-Write-Host "Source:      $sourceRoot"
-Write-Host "Skills:      $targetSkillRoot"
-Write-Host "AGENTS.md:   $agentsPath"
-Write-Host "Installed:   $($installed.Count)"
-Write-Host "Skipped:     $($skipped.Count)"
+Write-Host "OpenCode 安装完成。"
+Write-Host "来源：        $sourceRoot"
+Write-Host "Skill 目录：   $targetSkillRoot"
+Write-Host "AGENTS.md：   $agentsPath"
+Write-Host "已安装：       $($installed.Count)"
+Write-Host "已跳过：       $($skipped.Count)"

@@ -7,7 +7,7 @@ param(
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
-    [string]$Ref = "main",
+    [string]$Ref = "",
     [string]$NamePrefix = "superpowers-",
     [ValidateSet("Copy", "Junction")]
     [string]$OpenCodeInstallMode = "Copy",
@@ -31,7 +31,7 @@ $refreshScript = Join-Path $PSScriptRoot "Refresh-VendoredSuperpowers.ps1"
 $installScript = Join-Path $PSScriptRoot "install-all.ps1"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 
-Write-Host "Refreshing vendored superpowers..."
+Write-Host "正在刷新 vendored superpowers..."
 
 & $refreshScript `
     -SourcePath $SourcePath `
@@ -60,21 +60,38 @@ foreach ($entry in $triggerData) {
 }
 
 Write-Host ""
-Write-Host "Upstream refresh summary"
-Write-Host "Skills found:          $($installedSkillNames.Count)"
-Write-Host "Missing zh triggers:   $($missingTriggerNames.Count)"
-Write-Host "Stale zh triggers:     $($extraTriggerNames.Count)"
+Write-Host "上游刷新结果"
+Write-Host "发现 skill 数量：      $($installedSkillNames.Count)"
+Write-Host "缺少中文触发：        $($missingTriggerNames.Count)"
+Write-Host "多余中文触发：        $($extraTriggerNames.Count)"
 
 if ($missingTriggerNames.Count -gt 0) {
-    Write-Warning ("Missing zh-cn trigger entries: " + ($missingTriggerNames -join ", "))
+    Write-Warning ("缺少中文触发配置： " + ($missingTriggerNames -join ", "))
 }
 
 if ($extraTriggerNames.Count -gt 0) {
-    Write-Warning ("Trigger entries without upstream skill: " + ($extraTriggerNames -join ", "))
+    Write-Warning ("发现多余的中文触发配置： " + ($extraTriggerNames -join ", "))
 }
 
+$plannedVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $vendorRoot -RepositoryUrl $RepositoryUrl
+Write-Host ("准备安装的 upstream 版本：{0}" -f $plannedVersionInfo["Display"])
 Write-Host ""
-Write-Host "Reinstalling adapted skills into target hosts..."
+Confirm-UserMergeAction `
+    -Title "即将按刷新上游并重装方式覆盖已安装的 superpowers 内容" `
+    -Guidance @"
+这个命令会先刷新仓库里的 upstream，再重新覆盖安装到目标宿主。
+
+继续后会发生这些事：
+1. 刷新 vendor/superpowers
+2. 检查中文触发配置有没有缺漏
+3. 覆盖已安装的 superpowers skill
+
+如果第一次安装，或者你不想覆盖已有安装，
+请改用：
+pwsh .\scripts\powershell\install-all.ps1
+"@ `
+    -AssumeYes:$AssumeYes
+Write-Host "开始重新安装到目标宿主..."
 
 & $installScript `
     -Scope $Scope `
@@ -89,4 +106,4 @@ Write-Host "Reinstalling adapted skills into target hosts..."
     -AssumeYes:$AssumeYes
 
 Write-Host ""
-Write-Host "Refresh and reinstall complete."
+Write-Host "刷新并重装完成。"

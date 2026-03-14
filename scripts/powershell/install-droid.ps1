@@ -32,7 +32,7 @@ else {
 }
 
 if ($InstallMode -eq "Junction" -and -not [string]::IsNullOrWhiteSpace($NamePrefix)) {
-    throw "Junction mode cannot rename installed skills. Use -NamePrefix '' or switch to -InstallMode Copy."
+    throw "Junction 模式下不能重命名已安装的 skill。请改用 -NamePrefix ''，或者切换到 -InstallMode Copy。"
 }
 
 if (-not $VendorRoot) {
@@ -72,22 +72,45 @@ else {
 $overlayRoot = Join-Path $repoRoot "templates/droid/skill-overlays"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
+$metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
 
+$skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
 $skipped = New-Object System.Collections.Generic.List[string]
+$existingSkillTargets = @(
+    $skillDirectories | ForEach-Object {
+        Join-Path $targetSkillRoot (Get-InstalledSkillName -OriginalName $_.Name -NamePrefix $NamePrefix)
+    } | Where-Object { Test-Path -LiteralPath $_ }
+)
+$sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -RepositoryUrl $RepositoryUrl
+$currentInstalledVersion = Get-InstalledSuperpowersVersionText `
+    -MetadataRoot $metadataRoot `
+    -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-SuperpowersVersionBanner `
+    -HostName "Droid" `
+    -CurrentInstalledVersion $currentInstalledVersion `
+    -PlannedVersion ([string]$sourceVersionInfo["Display"])
+$overwriteExistingSkills = Resolve-ExistingSkillAction `
+    -HostName "Droid" `
+    -ExistingPaths $existingSkillTargets `
+    -Force:$Force `
+    -AssumeYes:$AssumeYes
 
-foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot) {
+if ($overwriteExistingSkills) {
+    Backup-ExistingTargets -HostName "Droid" -Paths $existingSkillTargets | Out-Null
+}
+
+foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot $installedName
 
     if (Test-Path -LiteralPath $targetSkillPath) {
-        if ($Force) {
-            Remove-ExistingTarget -Path $targetSkillPath
+        if ($overwriteExistingSkills) {
+            Remove-ExistingTarget -Path $targetSkillPath -AssumeYes:$AssumeYes
         }
         else {
-            Write-Warning "Skipping existing Droid skill: $targetSkillPath"
             $skipped.Add($installedName)
             continue
         }
@@ -141,17 +164,44 @@ if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $agentsBlock = $agentsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
-Backup-ExistingFile -Path $agentsPath -Reason "Updating Droid AGENTS.md superpowers section." | Out-Null
+Backup-ExistingFile -Path $agentsPath -Reason "更新 Droid 的 AGENTS.md 中 superpowers 说明段前先备份。" | Out-Null
 
 Upsert-ManagedBlock `
     -Path $agentsPath `
     -BlockId "superpowers-compat" `
     -Content $agentsBlock
 
+$versionInfoToRecord = $null
+if (($existingSkillTargets.Count -gt 0) -and (-not $overwriteExistingSkills)) {
+    if ($installed.Count -gt 0) {
+        $versionInfoToRecord = @{
+            Display = "混合版本（保留旧安装，只补装了缺少的 skill）"
+            Commit = ""
+            CommitShort = ""
+            Ref = ""
+            RepositoryUrl = [string]$sourceVersionInfo["RepositoryUrl"]
+            IsKnown = $false
+        }
+    }
+}
+else {
+    $versionInfoToRecord = $sourceVersionInfo
+}
+
+if ($versionInfoToRecord) {
+    Save-SuperpowersInstallMetadata `
+        -MetadataRoot $metadataRoot `
+        -HostName "Droid" `
+        -VersionInfo $versionInfoToRecord `
+        -SourceRoot $sourceRoot `
+        -SkillCount ($installed.Count + $skipped.Count) `
+        -NamePrefix $NamePrefix
+}
+
 Write-Host ""
-Write-Host "Droid installation complete."
-Write-Host "Source:      $sourceRoot"
-Write-Host "Skills:      $targetSkillRoot"
-Write-Host "AGENTS.md:   $agentsPath"
-Write-Host "Installed:   $($installed.Count)"
-Write-Host "Skipped:     $($skipped.Count)"
+Write-Host "Droid 安装完成。"
+Write-Host "来源：        $sourceRoot"
+Write-Host "Skill 目录：   $targetSkillRoot"
+Write-Host "AGENTS.md：   $agentsPath"
+Write-Host "已安装：       $($installed.Count)"
+Write-Host "已跳过：       $($skipped.Count)"

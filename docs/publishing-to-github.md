@@ -91,11 +91,18 @@ pwsh .\scripts\powershell\update-all.ps1 -Targets All -Scope User
 
 如果用户自己不想先 `git pull`，`scripts/powershell/update-all.ps1` 会自动尝试更新当前仓库，然后重新安装。
 
+说明：
+
+- 这个命令会先提醒“接下来会覆盖已有 superpowers 安装”，用户确认后才继续
+- 如果需要无人值守，可以加 `-AssumeYes`
+
 如果维护者想把仓库内 vendored upstream 刷到新版本，再强制重装：
 
 ```powershell
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ```
+
+这个命令也会先提醒即将覆盖已有 superpowers 安装；只有加了 `-AssumeYes` 才会跳过确认。
 
 ## 维护 vendored upstream
 
