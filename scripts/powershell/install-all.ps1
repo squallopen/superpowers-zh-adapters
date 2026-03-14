@@ -22,6 +22,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
 $resolvedTargets = if ($Targets -contains "All") {
     @("Cline", "Droid", "OpenCode", "CodeBuddy")
 }

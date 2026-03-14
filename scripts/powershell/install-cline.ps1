@@ -14,9 +14,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-Import-Module (Join-Path $PSScriptRoot "scripts/Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-$bundledVendorRoot = Join-Path $PSScriptRoot "vendor/superpowers"
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
+$bundledVendorRoot = Join-Path $repoRoot "vendor/superpowers"
 
 if ($Scope -eq "Project") {
     $ProjectRoot = Resolve-AbsolutePath -Path $ProjectRoot
@@ -59,8 +62,8 @@ else {
     Join-Path $ProjectRoot ".clinerules"
 }
 
-$overlayRoot = Join-Path $PSScriptRoot "templates/cline/skill-overlays"
-$triggerDataPath = Join-Path $PSScriptRoot "data/zh-cn-skill-triggers.json"
+$overlayRoot = Join-Path $repoRoot "templates/cline/skill-overlays"
+$triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
 
 Ensure-Directory -Path $targetSkillRoot
@@ -110,12 +113,12 @@ $tokens = @{
 }
 
 $bootstrapRule = Expand-TemplateFile `
-    -TemplatePath (Join-Path $PSScriptRoot "templates/cline/rules/00-superpowers-bootstrap.md") `
+    -TemplatePath (Join-Path $repoRoot "templates/cline/rules/00-superpowers-bootstrap.md") `
     -Tokens $tokens
 Set-Content -LiteralPath (Join-Path $targetRuleRoot "00-superpowers-bootstrap.md") -Value $bootstrapRule -Encoding utf8
 
 $outputRule = Expand-TemplateFile `
-    -TemplatePath (Join-Path $PSScriptRoot "templates/cline/rules/10-output-docs-zh-cn.md") `
+    -TemplatePath (Join-Path $repoRoot "templates/cline/rules/10-output-docs-zh-cn.md") `
     -Tokens $tokens
 Set-Content -LiteralPath (Join-Path $targetRuleRoot "10-output-docs-zh-cn.md") -Value $outputRule -Encoding utf8
 

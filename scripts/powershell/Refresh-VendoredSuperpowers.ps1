@@ -3,13 +3,20 @@ param(
     [string]$SourcePath,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
     [string]$Ref = "main",
-    [string]$TargetPath = (Join-Path $PSScriptRoot "..\vendor\superpowers")
+    [string]$TargetPath = (Join-Path $PSScriptRoot "..\..\vendor\superpowers")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+
+Assert-WindowsOnly
+Assert-RequiredCommand -CommandName "robocopy" -InstallHint "robocopy is built into supported Windows editions."
+
+if (-not $SourcePath) {
+    Assert-RequiredCommand -CommandName "git" -InstallHint "Install Git for Windows from https://git-scm.com/download/win and reopen PowerShell."
+}
 
 $resolvedTargetPath = Resolve-AbsolutePath -Path $TargetPath
 $stagingRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("superpowers-refresh-" + [Guid]::NewGuid().ToString("N"))

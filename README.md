@@ -12,46 +12,54 @@
 - 新建文档但没指定文件名时，优先用中文文件名
 - 在宿主差异大的地方加一层兼容规则，而不是手工重写整套 skill
 
+## 当前官方支持环境
+
+- `Windows`
+- `PowerShell 7`（命令是 `pwsh`）
+- `Git for Windows`
+
+当前仓库的正式脚本入口都在 [scripts/powershell/](scripts/powershell)，其他操作系统暂时不官方维护；如果以后有人要补，可以按 [scripts/README.md](scripts/README.md) 的目录规范新增运行时。
+
 ## 先看最常用的命令
 
 第一次安装，直接用：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 ```
 
 安装到当前项目，不装到用户目录：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
 ```
 
 这个仓库自己更新了，重新拉下来并重装：
 
 ```powershell
-pwsh .\update-all.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\update-all.ps1 -Targets All -Scope User
 ```
 
 上游 `obra/superpowers` 更新了，刷新 vendored upstream 再重装：
 
 ```powershell
-pwsh .\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ```
 
 如果你手上已经有一个新的 upstream 本地 checkout：
 
 ```powershell
-pwsh .\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path\to\superpowers -Targets All -Scope User
+pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path\to\superpowers -Targets All -Scope User
 ```
 
 ## 这几个脚本分别干什么
 
 | 脚本 | 用途 |
 | --- | --- |
-| `install-all.ps1` | 用当前仓库里的内容安装到宿主 |
-| `update-all.ps1` | 先更新这个适配仓库，再调用 `install-all.ps1` |
-| `refresh-upstream-and-reinstall.ps1` | 先把 `vendor/superpowers` 刷到最新 upstream，再强制重装 |
-| `scripts/Refresh-VendoredSuperpowers.ps1` | 只刷新 `vendor/superpowers`，不安装 |
+| `scripts/powershell/install-all.ps1` | 用当前仓库里的内容安装到宿主 |
+| `scripts/powershell/update-all.ps1` | 先更新这个适配仓库，再调用 `scripts/powershell/install-all.ps1` |
+| `scripts/powershell/refresh-upstream-and-reinstall.ps1` | 先把 `vendor/superpowers` 刷到最新 upstream，再强制重装 |
+| `scripts/powershell/Refresh-VendoredSuperpowers.ps1` | 只刷新 `vendor/superpowers`，不安装 |
 
 如果你只是普通使用者，常用的是前两个。
 
@@ -88,7 +96,7 @@ pwsh .\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path\to\superpowers -Ta
 现在已经有一条命令把这两步串起来：
 
 ```powershell
-pwsh .\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ```
 
 脚本会顺带帮你检查两件事：
@@ -105,10 +113,10 @@ pwsh .\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ## 只装某一个宿主
 
 ```powershell
-pwsh .\install-all.ps1 -Targets Cline -Scope User
-pwsh .\install-all.ps1 -Targets Droid -Scope User
-pwsh .\install-all.ps1 -Targets OpenCode -Scope User
-pwsh .\install-all.ps1 -Targets CodeBuddy -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 ```
 
 ## 使用自己的 upstream 源
@@ -116,13 +124,13 @@ pwsh .\install-all.ps1 -Targets CodeBuddy -Scope User
 如果你不想用这个仓库里的 `vendor/superpowers`，也可以直接指定：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets All -Scope User -SourcePath E:\path\to\superpowers
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User -SourcePath E:\path\to\superpowers
 ```
 
 或者指定一个单独的 vendor 目录：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets All -Scope User -VendorRoot $HOME\.superpowers\upstream
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User -VendorRoot $HOME\.superpowers\upstream
 ```
 
 ## 目录里这些文件有什么用
@@ -133,12 +141,17 @@ pwsh .\install-all.ps1 -Targets All -Scope User -VendorRoot $HOME\.superpowers\u
   - 中文触发词配置
 - `templates/`
   - 各宿主的规则模板和 overlay
+- `scripts/powershell/`
+  - 当前官方维护的 Windows PowerShell 安装脚本
+- `scripts/README.md`
+  - 脚本目录规范，给未来其他运行时预留结构
 - `docs/`
   - 中文使用说明、兼容矩阵、发布说明
 
 ## 要注意的地方
 
 - `User` scope 是“当前登录用户”，不是整台机器所有账号。
+- 当前官方只维护 `Windows + PowerShell 7 + Git for Windows` 这条脚本链路。
 - `Cline` 通过 `prompt.md` 工作，所以它一定是复制安装。
 - `OpenCode` 虽然是单文件 skill 入口，但 companion 目录也会一起复制，用来承接 `references/`、`scripts/` 等资源。
 - `CodeBuddy` 的项目级结构是官方公开文档确认过的；用户级 `~/.codebuddy` 路径是兼容写法。

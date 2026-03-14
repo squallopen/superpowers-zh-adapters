@@ -29,7 +29,9 @@
 
 ## 安装行为
 
-### `install-cline.ps1`
+当前官方维护的脚本入口都在 `scripts/powershell/`。
+
+### `scripts/powershell/install-cline.ps1`
 
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 安装到 `.cline/skills` 或 `~/.cline/skills`
@@ -38,7 +40,7 @@
 - 写入 `05-skill-triggers-zh-cn.md`
 - 写入 `10-output-docs-zh-cn.md`
 
-### `install-droid.ps1`
+### `scripts/powershell/install-droid.ps1`
 
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 安装到 `.factory/skills` 或 `~/.factory/skills`
@@ -46,7 +48,7 @@
 - 对 `using-superpowers`、`dispatching-parallel-agents`、`subagent-driven-development` 注入宿主 overlay
 - 通过 `AGENTS.md` managed block 追加中文输出和中文触发规则
 
-### `install-opencode.ps1`
+### `scripts/powershell/install-opencode.ps1`
 
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 按官方 `skill/*.md` 形式安装到 `.opencode/skill` 或 `~/.config/opencode/skill`
@@ -55,7 +57,7 @@
 - 入口文件会把本地引用改写到 companion 目录，避免相对路径失效
 - 通过 `AGENTS.md` managed block 追加中文输出和中文触发规则
 
-### `install-codebuddy.ps1`
+### `scripts/powershell/install-codebuddy.ps1`
 
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 项目级安装到 `.codebuddy/skills`

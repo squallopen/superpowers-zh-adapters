@@ -16,9 +16,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-Import-Module (Join-Path $PSScriptRoot "scripts/Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-$bundledVendorRoot = Join-Path $PSScriptRoot "vendor/superpowers"
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
+$bundledVendorRoot = Join-Path $repoRoot "vendor/superpowers"
 
 if ($Scope -eq "Project") {
     $ProjectRoot = Resolve-AbsolutePath -Path $ProjectRoot
@@ -51,24 +54,22 @@ $sourceRoot = Resolve-SuperpowersSource `
     -RepositoryUrl $RepositoryUrl `
     -UpdateSource:$UpdateSource
 
-$codebuddyRoot = if ($Scope -eq "User") {
-    Join-Path $HOME ".codebuddy"
+$targetSkillRoot = if ($Scope -eq "User") {
+    Join-Path $HOME ".factory/skills"
 }
 else {
-    Join-Path $ProjectRoot ".codebuddy"
+    Join-Path $ProjectRoot ".factory/skills"
 }
 
-$targetSkillRoot = Join-Path $codebuddyRoot "skills"
-$settingsPath = Join-Path $codebuddyRoot "settings.json"
-$instructionsPath = if ($Scope -eq "User") {
-    Join-Path $HOME ".codebuddy/CODEBUDDY.md"
+$agentsPath = if ($Scope -eq "User") {
+    Join-Path $HOME ".factory/AGENTS.md"
 }
 else {
-    Join-Path $ProjectRoot "CODEBUDDY.md"
+    Join-Path $ProjectRoot "AGENTS.md"
 }
 
-$overlayRoot = Join-Path $PSScriptRoot "templates/codebuddy/skill-overlays"
-$triggerDataPath = Join-Path $PSScriptRoot "data/zh-cn-skill-triggers.json"
+$overlayRoot = Join-Path $repoRoot "templates/droid/skill-overlays"
+$triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
 
 Ensure-Directory -Path $targetSkillRoot
@@ -85,7 +86,7 @@ foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
             Remove-ExistingTarget -Path $targetSkillPath
         }
         else {
-            Write-Warning "Skipping existing CodeBuddy skill: $targetSkillPath"
+            Write-Warning "Skipping existing Droid skill: $targetSkillPath"
             $skipped.Add($installedName)
             continue
         }
@@ -118,7 +119,7 @@ foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
                 Append-SkillOverlay `
                     -SkillFilePath $skillFilePath `
                     -OverlayContent $overlayContent `
-                    -Heading "CodeBuddy Adaptation"
+                    -Heading "Factory Adaptation"
             }
         }
     }
@@ -129,31 +130,25 @@ foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
     $installed.Add($installedName)
 }
 
-$instructionsBlock = Expand-TemplateFile `
-    -TemplatePath (Join-Path $PSScriptRoot "templates/codebuddy/CODEBUDDY.block.md") `
+$agentsBlock = Expand-TemplateFile `
+    -TemplatePath (Join-Path $repoRoot "templates/droid/AGENTS.block.md") `
     -Tokens @{
         NAME_PREFIX = $NamePrefix
     }
-
 $triggerGuide = New-DroidChineseTriggerGuide -TriggerData $triggerData -NamePrefix $NamePrefix
 if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
-    $instructionsBlock = $instructionsBlock.TrimEnd() + "`n`n" + $triggerGuide
+    $agentsBlock = $agentsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
 Upsert-ManagedBlock `
-    -Path $instructionsPath `
-    -BlockId "superpowers-codebuddy" `
-    -Content $instructionsBlock
-
-$settings = Get-JsonObject -Path $settingsPath
-$settings["language"] = "简体中文"
-Save-JsonObject -Path $settingsPath -Data $settings
+    -Path $agentsPath `
+    -BlockId "superpowers-compat" `
+    -Content $agentsBlock
 
 Write-Host ""
-Write-Host "CodeBuddy installation complete."
-Write-Host "Source:        $sourceRoot"
-Write-Host "Skills:        $targetSkillRoot"
-Write-Host "Instructions:  $instructionsPath"
-Write-Host "Settings:      $settingsPath"
-Write-Host "Installed:     $($installed.Count)"
-Write-Host "Skipped:       $($skipped.Count)"
+Write-Host "Droid installation complete."
+Write-Host "Source:      $sourceRoot"
+Write-Host "Skills:      $targetSkillRoot"
+Write-Host "AGENTS.md:   $agentsPath"
+Write-Host "Installed:   $($installed.Count)"
+Write-Host "Skipped:     $($skipped.Count)"

@@ -1,5 +1,34 @@
 Set-StrictMode -Version Latest
 
+function Assert-WindowsOnly {
+    [CmdletBinding()]
+    param()
+
+    if ($env:OS -ne "Windows_NT") {
+        throw "This repository currently only ships Windows PowerShell installers. If you want support for another OS, add a new runtime under scripts/."
+    }
+}
+
+function Assert-RequiredCommand {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$CommandName,
+        [string]$InstallHint = ""
+    )
+
+    if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
+        return
+    }
+
+    $message = "Missing required command '$CommandName'."
+    if (-not [string]::IsNullOrWhiteSpace($InstallHint)) {
+        $message += " $InstallHint"
+    }
+
+    throw $message
+}
+
 function Ensure-Directory {
     [CmdletBinding()]
     param(
@@ -56,6 +85,7 @@ function Resolve-SuperpowersSource {
             Ensure-Directory -Path $parent
         }
 
+        Assert-RequiredCommand -CommandName "git" -InstallHint "Install Git for Windows from https://git-scm.com/download/win and reopen PowerShell."
         Write-Host "Cloning superpowers from $RepositoryUrl into $resolvedVendorRoot"
         & git clone --depth 1 $RepositoryUrl $resolvedVendorRoot
         if ($LASTEXITCODE -ne 0) {
@@ -63,6 +93,7 @@ function Resolve-SuperpowersSource {
         }
     }
     elseif ($UpdateSource) {
+        Assert-RequiredCommand -CommandName "git" -InstallHint "Install Git for Windows from https://git-scm.com/download/win and reopen PowerShell."
         Write-Host "Updating existing superpowers checkout in $resolvedVendorRoot"
         & git -C $resolvedVendorRoot pull --ff-only
         if ($LASTEXITCODE -ne 0) {
@@ -656,6 +687,8 @@ function New-DroidChineseTriggerGuide {
 }
 
 Export-ModuleMember -Function @(
+    "Assert-WindowsOnly",
+    "Assert-RequiredCommand",
     "Ensure-Directory",
     "Resolve-AbsolutePath",
     "Resolve-SuperpowersSource",

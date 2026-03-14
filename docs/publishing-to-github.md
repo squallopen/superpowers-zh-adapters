@@ -43,37 +43,37 @@ git push -u origin main
 ```powershell
 git clone https://github.com/<owner>/<repo>.git
 cd <repo>
-pwsh .\install-all.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 ```
 
 只装 Cline：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets Cline -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
 ```
 
 只装 Droid：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets Droid -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 ```
 
 只装 OpenCode：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets OpenCode -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 ```
 
 只装 CodeBuddy：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets CodeBuddy -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 ```
 
 安装到某个项目：
 
 ```powershell
-pwsh .\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
+pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
 ```
 
 说明：
@@ -86,15 +86,15 @@ pwsh .\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\proje
 仓库更新后，用户可以直接：
 
 ```powershell
-pwsh .\update-all.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\update-all.ps1 -Targets All -Scope User
 ```
 
-如果用户自己不想先 `git pull`，`update-all.ps1` 会自动尝试更新当前仓库，然后重新安装。
+如果用户自己不想先 `git pull`，`scripts/powershell/update-all.ps1` 会自动尝试更新当前仓库，然后重新安装。
 
 如果维护者想把仓库内 vendored upstream 刷到新版本，再强制重装：
 
 ```powershell
-pwsh .\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
+pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 ```
 
 ## 维护 vendored upstream
@@ -102,11 +102,11 @@ pwsh .\refresh-upstream-and-reinstall.ps1 -Targets All -Scope User
 如果你要把仓库里的 `vendor/superpowers` 刷到最新 upstream：
 
 ```powershell
-pwsh .\scripts\Refresh-VendoredSuperpowers.ps1
+pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 ```
 
 如果你已经本地改好了一个上游 checkout，也可以直接用本地源覆盖：
 
 ```powershell
-pwsh .\scripts\Refresh-VendoredSuperpowers.ps1 -SourcePath E:\path\to\superpowers
+pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1 -SourcePath E:\path\to\superpowers
 ```

@@ -20,12 +20,15 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-Import-Module (Join-Path $PSScriptRoot "scripts/Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-$vendorRoot = Join-Path $PSScriptRoot "vendor/superpowers"
-$refreshScript = Join-Path $PSScriptRoot "scripts/Refresh-VendoredSuperpowers.ps1"
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
+$vendorRoot = Join-Path $repoRoot "vendor/superpowers"
+$refreshScript = Join-Path $PSScriptRoot "Refresh-VendoredSuperpowers.ps1"
 $installScript = Join-Path $PSScriptRoot "install-all.ps1"
-$triggerDataPath = Join-Path $PSScriptRoot "data/zh-cn-skill-triggers.json"
+$triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 
 Write-Host "Refreshing vendored superpowers..."
 

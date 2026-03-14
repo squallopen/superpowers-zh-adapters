@@ -16,9 +16,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-Import-Module (Join-Path $PSScriptRoot "scripts/Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-$bundledVendorRoot = Join-Path $PSScriptRoot "vendor/superpowers"
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
+$bundledVendorRoot = Join-Path $repoRoot "vendor/superpowers"
 
 if ($Scope -eq "Project") {
     $ProjectRoot = Resolve-AbsolutePath -Path $ProjectRoot
@@ -61,8 +64,8 @@ else {
     Join-Path $ProjectRoot "AGENTS.md"
 }
 
-$overlayRoot = Join-Path $PSScriptRoot "templates/opencode/skill-overlays"
-$triggerDataPath = Join-Path $PSScriptRoot "data/zh-cn-skill-triggers.json"
+$overlayRoot = Join-Path $repoRoot "templates/opencode/skill-overlays"
+$triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
 
 Ensure-Directory -Path $targetSkillRoot
@@ -129,7 +132,7 @@ foreach ($skillDirectory in Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 }
 
 $agentsBlock = Expand-TemplateFile `
-    -TemplatePath (Join-Path $PSScriptRoot "templates/opencode/AGENTS.block.md") `
+    -TemplatePath (Join-Path $repoRoot "templates/opencode/AGENTS.block.md") `
     -Tokens @{
         NAME_PREFIX = $NamePrefix
     }

@@ -22,13 +22,20 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
+Assert-WindowsOnly
+
 if (-not $SkipRepoPull) {
-    $gitDirectory = Join-Path $PSScriptRoot ".git"
+    Assert-RequiredCommand -CommandName "git" -InstallHint "Install Git for Windows from https://git-scm.com/download/win and reopen PowerShell."
+
+    $gitDirectory = Join-Path $repoRoot ".git"
     if (-not (Test-Path -LiteralPath $gitDirectory)) {
-        throw "update-all.ps1 must run from a git checkout, or use -SkipRepoPull."
+        throw "scripts/powershell/update-all.ps1 must run from a git checkout, or use -SkipRepoPull."
     }
 
-    & git -C $PSScriptRoot pull --ff-only
+    & git -C $repoRoot pull --ff-only
     if ($LASTEXITCODE -ne 0) {
         throw "git pull failed with exit code $LASTEXITCODE"
     }
