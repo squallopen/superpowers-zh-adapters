@@ -36,9 +36,10 @@
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 安装到 `.cline/skills` 或 `~/.cline/skills`
 - 从 upstream `SKILL.md` 生成 `prompt.md`
-- 写入 `00-superpowers-bootstrap.md`
-- 写入 `05-skill-triggers-zh-cn.md`
-- 写入 `10-output-docs-zh-cn.md`
+- 写入 `90-superpowers-bootstrap.md`
+- 写入 `91-superpowers-skill-triggers-zh-cn.md`
+- 写入 `92-superpowers-output-docs-zh-cn.md`
+- 不覆盖其他 rule 文件；如果检测到早期版本留下的 `00/05/10` 旧文件，只告警，用户自己决定是否删除
 
 ### `scripts/powershell/install-droid.ps1`
 
@@ -46,7 +47,8 @@
 - 安装到 `.factory/skills` 或 `~/.factory/skills`
 - `Copy` 模式下可重写 `name:` 并扩展 `description:` 的中文触发提示
 - 对 `using-superpowers`、`dispatching-parallel-agents`、`subagent-driven-development` 注入宿主 overlay
-- 通过 `AGENTS.md` managed block 追加中文输出和中文触发规则
+- 只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
+- 如果原文件已存在，改之前会先在旁边备份一份
 
 ### `scripts/powershell/install-opencode.ps1`
 
@@ -55,19 +57,22 @@
 - 每个 skill 生成一个 `superpowers-*.md` 入口文件
 - 同名 companion 目录保留 upstream 的 `references/`、`scripts/` 与附带 markdown 资源
 - 入口文件会把本地引用改写到 companion 目录，避免相对路径失效
-- 通过 `AGENTS.md` managed block 追加中文输出和中文触发规则
+- 只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
+- 如果原文件已存在，改之前会先在旁边备份一份
 
 ### `scripts/powershell/install-codebuddy.ps1`
 
 - 默认优先使用仓库里的 `vendor/superpowers`
 - 项目级安装到 `.codebuddy/skills`
-- 项目根写入 `CODEBUDDY.md` managed block
+- 项目根只改 `CODEBUDDY.md` 里我们自己加进去的那一段
 - 复制模式下会扩展 `description:` 的中文触发提示并追加 overlay
-- 会写入 `.codebuddy/settings.json` 的 `language: 简体中文`
+- 如果 `.codebuddy/settings.json` 还没有 `language`，会补成 `简体中文`
+- 如果 `.codebuddy/settings.json` 已经有 `language`，会保留原值并提示用户手动处理
+- 改 `CODEBUDDY.md` 或 `.codebuddy/settings.json` 前会先在旁边备份一份
 - 用户级 `~/.codebuddy` 路径属于兼容性镜像写法；官方公开文档主要覆盖项目级结构
 
 ## 有意不做的事
 
 - 不伪造 Cline 的可写子代理能力。
 - 不尝试把 upstream 的所有英文内容全文重写成中文。
-- 不覆盖 managed block 之外的用户自定义说明文件内容。
+- 不覆盖我们自己那一段之外的用户自定义说明内容。

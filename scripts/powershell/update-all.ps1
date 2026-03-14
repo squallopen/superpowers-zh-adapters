@@ -16,7 +16,8 @@ param(
     [ValidateSet("Copy", "Junction")]
     [string]$CodeBuddyInstallMode = "Copy",
     [switch]$Force,
-    [switch]$SkipRepoPull
+    [switch]$SkipRepoPull,
+    [switch]$AssumeYes
 )
 
 Set-StrictMode -Version Latest
@@ -52,4 +53,5 @@ if (-not $SkipRepoPull) {
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `
-    -Force:$Force
+    -Force:$Force `
+    -AssumeYes:$AssumeYes

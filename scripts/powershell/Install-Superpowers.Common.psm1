@@ -29,6 +29,61 @@ function Assert-RequiredCommand {
     throw $message
 }
 
+function Backup-ExistingFile {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [string]$Reason = ""
+    )
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return $null
+    }
+
+    $parent = Split-Path -Parent $Path
+    $leaf = Split-Path -Leaf $Path
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $backupPath = Join-Path $parent ("{0}.superpowers.bak-{1}" -f $leaf, $timestamp)
+
+    Copy-Item -LiteralPath $Path -Destination $backupPath -Force
+
+    if ([string]::IsNullOrWhiteSpace($Reason)) {
+        Write-Host ("Backup created: {0}" -f $backupPath)
+    }
+    else {
+        Write-Host ("Backup created: {0} ({1})" -f $backupPath, $Reason)
+    }
+
+    return $backupPath
+}
+
+function Confirm-UserMergeAction {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Title,
+        [Parameter(Mandatory)]
+        [string]$Guidance,
+        [switch]$AssumeYes
+    )
+
+    if ($AssumeYes) {
+        Write-Warning "$Title 已由 -AssumeYes 自动确认。"
+        return
+    }
+
+    Write-Warning $Title
+    Write-Host ""
+    Write-Host $Guidance
+    Write-Host ""
+
+    $answer = Read-Host "如果你已经看完并确认继续，请输入 YES；其他任意输入将取消"
+    if ($answer -cne "YES") {
+        throw "Cancelled by user after merge review prompt."
+    }
+}
+
 function Ensure-Directory {
     [CmdletBinding()]
     param(
@@ -689,6 +744,8 @@ function New-DroidChineseTriggerGuide {
 Export-ModuleMember -Function @(
     "Assert-WindowsOnly",
     "Assert-RequiredCommand",
+    "Backup-ExistingFile",
+    "Confirm-UserMergeAction",
     "Ensure-Directory",
     "Resolve-AbsolutePath",
     "Resolve-SuperpowersSource",

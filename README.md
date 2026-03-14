@@ -74,6 +74,46 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 | `OpenCode` | `.opencode/skill` 或 `~/.config/opencode/skill` | 按官方 `skill/*.md` 形式安装，并保留 companion 资源目录 |
 | `CodeBuddy` | `.codebuddy/skills` | 项目根写入 `CODEBUDDY.md`，并写入中文语言设置 |
 
+## 配置覆盖策略
+
+- `Cline`：只写我们自己的 3 个专用规则文件，不会去改你别的规则文件
+- `Droid` / `OpenCode`：只改 `AGENTS.md` 里我们自己加进去的那一段，别的内容不动
+- `CodeBuddy`：只改 `CODEBUDDY.md` 里我们自己加进去的那一段
+- `CodeBuddy` 的 `.codebuddy/settings.json`：如果你已经写了 `language`，脚本会保留原值，不会硬改
+
+当前 `Cline` 专用 rule 文件名是：
+
+- `90-superpowers-bootstrap.md`
+- `91-superpowers-skill-triggers-zh-cn.md`
+- `92-superpowers-output-docs-zh-cn.md`
+
+如果你是从这个仓库的早期版本升级上来，目录里可能还留着旧文件：
+
+- `00-superpowers-bootstrap.md`
+- `05-skill-triggers-zh-cn.md`
+- `10-output-docs-zh-cn.md`
+
+这 3 个旧文件现在不会被脚本自动删除，避免误删你的自定义内容。你需要自己检查后再决定是否删除。
+
+## 备份和人工确认
+
+脚本在改下面这些文件前，会先在原目录旁边留一份备份，文件名类似：
+
+- `原文件名.superpowers.bak-时间戳`
+
+会自动备份的重点文件：
+
+- `Cline` 的专用规则文件
+- `Droid` / `OpenCode` 的 `AGENTS.md`
+- `CodeBuddy` 的 `CODEBUDDY.md`
+- `CodeBuddy` 的 `.codebuddy/settings.json`（仅在脚本准备补 `language` 时）
+
+如果脚本发现你机器上还有旧版 `Cline` 规则文件，它不会替你乱删，而是会：
+
+1. 先帮你备份旧文件
+2. 告诉你怎么自己看、自己合并
+3. 等你确认后再继续
+
 ## 这个仓库现在做到什么程度
 
 - 已 vendored 完整 upstream，不是只挑几个 skill
@@ -152,6 +192,9 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User -VendorRoot $
 
 - `User` scope 是“当前登录用户”，不是整台机器所有账号。
 - 当前官方只维护 `Windows + PowerShell 7 + Git for Windows` 这条脚本链路。
+- `Cline` 现在使用专用 rule 文件名，避免撞上你原来常见的 `00-*` / `10-*` 规则文件。
+- `Droid` / `OpenCode` / `CodeBuddy` 的说明文件不会整文件盖掉；但如果你手改了我们自己那一段，重装时那一段会被更新。
+- 如果你已经在 `.codebuddy/settings.json` 里设置了 `language`，脚本会保留你的值；想切成中文请自己改成 `简体中文`。
 - `Cline` 通过 `prompt.md` 工作，所以它一定是复制安装。
 - `OpenCode` 虽然是单文件 skill 入口，但 companion 目录也会一起复制，用来承接 `references/`、`scripts/` 等资源。
 - `CodeBuddy` 的项目级结构是官方公开文档确认过的；用户级 `~/.codebuddy` 路径是兼容写法。

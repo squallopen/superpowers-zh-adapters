@@ -10,7 +10,8 @@ param(
     [ValidateSet("Copy", "Junction")]
     [string]$InstallMode = "Copy",
     [string]$NamePrefix = "superpowers-",
-    [switch]$Force
+    [switch]$Force,
+    [switch]$AssumeYes
 )
 
 Set-StrictMode -Version Latest
@@ -143,14 +144,22 @@ if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $instructionsBlock = $instructionsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
+Backup-ExistingFile -Path $instructionsPath -Reason "Updating CodeBuddy instructions section." | Out-Null
+
 Upsert-ManagedBlock `
     -Path $instructionsPath `
     -BlockId "superpowers-codebuddy" `
     -Content $instructionsBlock
 
 $settings = Get-JsonObject -Path $settingsPath
-$settings["language"] = "简体中文"
-Save-JsonObject -Path $settingsPath -Data $settings
+if (-not $settings.ContainsKey("language")) {
+    Backup-ExistingFile -Path $settingsPath -Reason "Adding default CodeBuddy language setting." | Out-Null
+    $settings["language"] = "简体中文"
+    Save-JsonObject -Path $settingsPath -Data $settings
+}
+elseif ($settings["language"] -ne "简体中文") {
+    Write-Warning "CodeBuddy 里已经有 language='$($settings["language"])'，脚本不会改它。想改成中文的话，请你自己把 .codebuddy/settings.json 里的 language 改成 '简体中文'。"
+}
 
 Write-Host ""
 Write-Host "CodeBuddy installation complete."

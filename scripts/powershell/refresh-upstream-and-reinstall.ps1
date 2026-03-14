@@ -14,7 +14,8 @@ param(
     [ValidateSet("Copy", "Junction")]
     [string]$DroidInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
-    [string]$CodeBuddyInstallMode = "Copy"
+    [string]$CodeBuddyInstallMode = "Copy",
+    [switch]$AssumeYes
 )
 
 Set-StrictMode -Version Latest
@@ -84,7 +85,8 @@ Write-Host "Reinstalling adapted skills into target hosts..."
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `
-    -Force
+    -Force `
+    -AssumeYes:$AssumeYes
 
 Write-Host ""
 Write-Host "Refresh and reinstall complete."

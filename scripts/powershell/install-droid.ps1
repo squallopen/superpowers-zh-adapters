@@ -10,7 +10,8 @@ param(
     [ValidateSet("Copy", "Junction")]
     [string]$InstallMode = "Copy",
     [string]$NamePrefix = "superpowers-",
-    [switch]$Force
+    [switch]$Force,
+    [switch]$AssumeYes
 )
 
 Set-StrictMode -Version Latest
@@ -139,6 +140,8 @@ $triggerGuide = New-DroidChineseTriggerGuide -TriggerData $triggerData -NamePref
 if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $agentsBlock = $agentsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
+
+Backup-ExistingFile -Path $agentsPath -Reason "Updating Droid AGENTS.md superpowers section." | Out-Null
 
 Upsert-ManagedBlock `
     -Path $agentsPath `

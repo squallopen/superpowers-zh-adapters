@@ -16,7 +16,8 @@ param(
     [string]$DroidInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$CodeBuddyInstallMode = "Copy",
-    [switch]$Force
+    [switch]$Force,
+    [switch]$AssumeYes
 )
 
 Set-StrictMode -Version Latest
@@ -41,7 +42,8 @@ if ($resolvedTargets -contains "Cline") {
         -RepositoryUrl $RepositoryUrl `
         -UpdateSource:$UpdateSource `
         -NamePrefix $NamePrefix `
-        -Force:$Force
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
 }
 
 if ($resolvedTargets -contains "Droid") {
@@ -54,7 +56,8 @@ if ($resolvedTargets -contains "Droid") {
         -UpdateSource:$UpdateSource `
         -InstallMode $DroidInstallMode `
         -NamePrefix $NamePrefix `
-        -Force:$Force
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
 }
 
 if ($resolvedTargets -contains "OpenCode") {
@@ -67,7 +70,8 @@ if ($resolvedTargets -contains "OpenCode") {
         -UpdateSource:$UpdateSource `
         -InstallMode $OpenCodeInstallMode `
         -NamePrefix $NamePrefix `
-        -Force:$Force
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
 }
 
 if ($resolvedTargets -contains "CodeBuddy") {
@@ -80,5 +84,6 @@ if ($resolvedTargets -contains "CodeBuddy") {
         -UpdateSource:$UpdateSource `
         -InstallMode $CodeBuddyInstallMode `
         -NamePrefix $NamePrefix `
-        -Force:$Force
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
 }

@@ -30,6 +30,25 @@
 - 如果以后有人要补其他系统，请在 `scripts/<runtime>/` 下新增，不要把逻辑继续堆进 `scripts/powershell/`
 - 新运行时尽量沿用同名入口：`install-all`、`update-all`、`refresh-upstream-and-reinstall`、`install-<host>`
 
+## 用户配置保护策略
+
+- 不要整文件覆盖用户现有的 `AGENTS.md`、`CODEBUDDY.md`
+- 这类说明文件只允许改我们自己加进去的那一段
+- `CodeBuddy` 的 `.codebuddy/settings.json` 不要强改用户已经存在的 `language`
+- `Cline` 不要占用通用规则文件名，避免撞用户已有的 `00-*`、`10-*` 规则
+- 改动前先自动备份
+- 如果遇到旧版遗留文件、格式冲突、或看不准是不是用户自己写的内容，先告诉用户怎么合并，再等用户确认
+
+推荐备份这些文件：
+
+- `AGENTS.md`
+- `CODEBUDDY.md`
+- `.codebuddy/settings.json`
+- `.clinerules/90-superpowers-bootstrap.md`
+- `.clinerules/91-superpowers-skill-triggers-zh-cn.md`
+- `.clinerules/92-superpowers-output-docs-zh-cn.md`
+- 以及旧版 `Cline` 规则文件 `00/05/10`
+
 ## 日常维护流程
 
 ### 1. 只更新适配层
@@ -88,6 +107,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 - `Cline` 通过规则文件约束文档输出为简体中文
 - `Droid`、`OpenCode`、`CodeBuddy` 通过 overlay / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
+- `Cline` 使用专用规则文件名 `90-superpowers-*.md`，不再占用早期那组通用文件名
 
 如果要改这类行为，先看：
 
@@ -139,12 +159,19 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 至少抽样看下面这些文件是否生成正确：
 
 - `.cline/skills/<skill>/prompt.md`
-- `.clinerules/05-skill-triggers-zh-cn.md`
+- `.clinerules/90-superpowers-bootstrap.md`
+- `.clinerules/91-superpowers-skill-triggers-zh-cn.md`
+- `.clinerules/92-superpowers-output-docs-zh-cn.md`
 - `.factory/skills/<skill>/SKILL.md`
 - `.opencode/skill/<skill>.md`
 - `.opencode/skill/<skill>/`
 - `.codebuddy/skills/<skill>/SKILL.md`
 - `AGENTS.md` 或 `CODEBUDDY.md`
+
+另外要检查：
+
+- `AGENTS.md` / `CODEBUDDY.md` 是否只改了我们自己那一段
+- `.codebuddy/settings.json` 如果原来已有 `language`，脚本是否只告警而没有强改
 
 ## 发布流程
 
