@@ -63,7 +63,7 @@ pwsh .\scripts\Refresh-VendoredSuperpowers.ps1
 
 ### 中文触发
 
-统一改 [data/zh-cn-skill-triggers.json](/E:/aiworkspace/skill-changer/data/zh-cn-skill-triggers.json)。
+统一改 [data/zh-cn-skill-triggers.json](data/zh-cn-skill-triggers.json)。
 
 原则：
 
@@ -83,10 +83,10 @@ pwsh .\scripts\Refresh-VendoredSuperpowers.ps1
 
 如果要改这类行为，先看：
 
-- [templates/cline/rules/10-output-docs-zh-cn.md](/E:/aiworkspace/skill-changer/templates/cline/rules/10-output-docs-zh-cn.md)
-- [templates/droid/AGENTS.block.md](/E:/aiworkspace/skill-changer/templates/droid/AGENTS.block.md)
-- [templates/opencode/AGENTS.block.md](/E:/aiworkspace/skill-changer/templates/opencode/AGENTS.block.md)
-- [templates/codebuddy/CODEBUDDY.block.md](/E:/aiworkspace/skill-changer/templates/codebuddy/CODEBUDDY.block.md)
+- [templates/cline/rules/10-output-docs-zh-cn.md](templates/cline/rules/10-output-docs-zh-cn.md)
+- [templates/droid/AGENTS.block.md](templates/droid/AGENTS.block.md)
+- [templates/opencode/AGENTS.block.md](templates/opencode/AGENTS.block.md)
+- [templates/codebuddy/CODEBUDDY.block.md](templates/codebuddy/CODEBUDDY.block.md)
 
 ## 新增一个宿主适配时怎么做
 
@@ -101,10 +101,10 @@ pwsh .\scripts\Refresh-VendoredSuperpowers.ps1
 最小落地清单：
 
 1. 新增 `install-<host>.ps1`
-2. 在 [install-all.ps1](/E:/aiworkspace/skill-changer/install-all.ps1) 和 [refresh-upstream-and-reinstall.ps1](/E:/aiworkspace/skill-changer/refresh-upstream-and-reinstall.ps1) 接入
+2. 在 [install-all.ps1](install-all.ps1) 和 [refresh-upstream-and-reinstall.ps1](refresh-upstream-and-reinstall.ps1) 接入
 3. 在 `templates/<host>/` 放宿主专属 overlay 或说明块
-4. 在 [docs/compatibility-matrix.md](/E:/aiworkspace/skill-changer/docs/compatibility-matrix.md) 补兼容说明
-5. 在 [README.md](/E:/aiworkspace/skill-changer/README.md) 和 [docs/zh-cn-usage-guide.md](/E:/aiworkspace/skill-changer/docs/zh-cn-usage-guide.md) 补用法
+4. 在 [docs/compatibility-matrix.md](docs/compatibility-matrix.md) 补兼容说明
+5. 在 [README.md](README.md) 和 [docs/zh-cn-usage-guide.md](docs/zh-cn-usage-guide.md) 补用法
 
 ## 验证建议
 
