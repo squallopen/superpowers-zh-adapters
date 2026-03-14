@@ -10,5 +10,10 @@ Upstream license:
 This repository's own adaptation layer consists primarily of:
 
 - local install and update scripts
-- Cline and Droid compatibility templates
+- Cline, Droid, OpenCode, and CodeBuddy compatibility templates
 - Chinese trigger metadata and usage guides
+
+Repository license:
+
+- This repository's adaptation layer is distributed under the MIT License.
+- See [`LICENSE`](LICENSE).

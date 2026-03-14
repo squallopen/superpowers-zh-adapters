@@ -148,3 +148,8 @@ pwsh .\install-all.ps1 -Targets All -Scope User -VendorRoot $HOME\.superpowers\u
 - [兼容性矩阵](docs/compatibility-matrix.md)
 - [中文使用指南](docs/zh-cn-usage-guide.md)
 - [发布到 GitHub](docs/publishing-to-github.md)
+
+## 许可证
+
+- 本仓库自己的适配层代码和文档使用 [MIT License](LICENSE)
+- vendored upstream `obra/superpowers` 也使用 MIT，见 [NOTICE.md](NOTICE.md) 和 `vendor/superpowers/LICENSE`
