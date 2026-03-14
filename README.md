@@ -147,6 +147,7 @@ pwsh .\install-all.ps1 -Targets All -Scope User -VendorRoot $HOME\.superpowers\u
 
 - [兼容性矩阵](docs/compatibility-matrix.md)
 - [中文使用指南](docs/zh-cn-usage-guide.md)
+- [贡献与维护说明](CONTRIBUTING.md)
 - [发布到 GitHub](docs/publishing-to-github.md)
 
 ## 许可证
