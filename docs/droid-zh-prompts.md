@@ -1,6 +1,49 @@
-# Droid 中文示例 Prompt
+# Droid 使用说明
 
-这份文档给的是适合 `Droid + superpowers` 适配层的中文说法。相比 Cline，Droid 更适合把边界清晰的任务真正委派出去。
+这份文档讲的是 `Droid + superpowers` 怎么更顺手地用。
+
+相比 `Cline`，`Droid` 更适合把边界清晰的任务真正委派出去。
+
+## 先记住 3 种触发方式
+
+### 1. 自然中文说法
+
+例如：
+
+- “先做需求分析和总体设计”
+- “把这个任务拆成几个独立子任务并行推进”
+- “先跑完验证再说完成”
+
+### 2. 直接点名 skill
+
+默认安装名带前缀 `superpowers-`，所以建议写完整名字：
+
+- `superpowers-dispatching-parallel-agents`
+- `superpowers-subagent-driven-development`
+- `superpowers-verification-before-completion`
+
+### 3. 如果宿主支持 slash / command 形式
+
+也优先写完整名字：
+
+- `/superpowers-dispatching-parallel-agents`
+- `/superpowers-finishing-a-development-branch`
+
+## Droid 最适合怎么理解
+
+- `Droid` 比 `Cline` 更适合把“目录边界清楚、文件面不重叠”的任务真正分给不同 agent
+- 即使允许并行，最后的整合、冲突处理和收尾判断仍建议由主线程完成
+
+## 常用工作流
+
+```mermaid
+flowchart LR
+    A["brainstorming"] --> B["writing-plans"]
+    B --> C["subagent-driven-development"]
+    C --> D["requesting-code-review"]
+    D --> E["verification-before-completion"]
+    E --> F["finishing-a-development-branch"]
+```
 
 ## 启动工作流
 
@@ -103,3 +146,7 @@
 - Droid 更适合把“目录边界清楚、文件面不重叠”的任务真正分给不同 agent。
 - 即使允许并行，也最好要求每个子任务回报 touched files、验证结果和 residual risks。
 - 最后的整合、冲突处理和收尾判断，仍然建议由主线程完成。
+
+## 想改中文触发词
+
+- [自定义中文触发词](customize-triggers.md)

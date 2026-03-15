@@ -29,22 +29,138 @@ function Assert-RequiredCommand {
     throw $message
 }
 
+function Resolve-BackupSessionRoot {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$BaseRoot,
+        [string]$BackupSessionRoot = ""
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BackupSessionRoot)) {
+        $resolvedBaseRoot = Resolve-AbsolutePath -Path $BaseRoot
+        $resolvedSessionRoot = Join-Path $resolvedBaseRoot (Get-Date -Format "yyyyMMdd-HHmmss")
+    }
+    else {
+        $resolvedSessionRoot = Resolve-AbsolutePath -Path $BackupSessionRoot
+    }
+
+    Ensure-Directory -Path $resolvedSessionRoot
+    return $resolvedSessionRoot
+}
+
+function Get-HostBackupRoot {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$BackupSessionRoot,
+        [Parameter(Mandatory)]
+        [string]$HostName,
+        [string]$Subdirectory = ""
+    )
+
+    $safeHostName = ($HostName.ToLowerInvariant() -replace "[^a-z0-9-]", "-")
+    $hostBackupRoot = Join-Path $BackupSessionRoot $safeHostName
+    if (-not [string]::IsNullOrWhiteSpace($Subdirectory)) {
+        $hostBackupRoot = Join-Path $hostBackupRoot $Subdirectory
+    }
+
+    Ensure-Directory -Path $hostBackupRoot
+    return $hostBackupRoot
+}
+
+function Resolve-UniqueBackupPath {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$PreferredPath
+    )
+
+    if (-not (Test-Path -LiteralPath $PreferredPath)) {
+        return $PreferredPath
+    }
+
+    $parent = Split-Path -Parent $PreferredPath
+    $leaf = Split-Path -Leaf $PreferredPath
+    $counter = 2
+
+    while ($true) {
+        $candidate = Join-Path $parent ("{0}-{1}" -f $leaf, $counter)
+        if (-not (Test-Path -LiteralPath $candidate)) {
+            return $candidate
+        }
+
+        $counter += 1
+    }
+}
+
+function Show-HostSectionStart {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$HostName
+    )
+
+    Write-Host ""
+    Write-Host ("========== {0} ==========" -f $HostName)
+    Write-Host ("[{0}] 开始处理..." -f $HostName)
+}
+
+function Show-HostStep {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$HostName,
+        [Parameter(Mandatory)]
+        [string]$Message
+    )
+
+    Write-Host ("[{0}] {1}" -f $HostName, $Message)
+}
+
+function Stop-SuperpowersRun {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Title,
+        [string[]]$Details = @()
+    )
+
+    Write-Host ""
+    Write-Warning $Title
+
+    foreach ($detail in $Details) {
+        if (-not [string]::IsNullOrWhiteSpace($detail)) {
+            Write-Host $detail
+        }
+    }
+
+    [Environment]::Exit(1)
+}
+
 function Backup-ExistingFile {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
         [string]$Path,
-        [string]$Reason = ""
+        [string]$Reason = "",
+        [string]$BackupRoot = ""
     )
 
     if (-not (Test-Path -LiteralPath $Path)) {
         return $null
     }
 
-    $parent = Split-Path -Parent $Path
     $leaf = Split-Path -Leaf $Path
-    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-    $backupPath = Join-Path $parent ("{0}.superpowers.bak-{1}" -f $leaf, $timestamp)
+    $backupParent = if ([string]::IsNullOrWhiteSpace($BackupRoot)) {
+        Split-Path -Parent $Path
+    }
+    else {
+        Resolve-AbsolutePath -Path $BackupRoot
+    }
+
+    Ensure-Directory -Path $backupParent
+    $backupPath = Resolve-UniqueBackupPath -PreferredPath (Join-Path $backupParent ("{0}.superpowers.bak" -f $leaf))
 
     Copy-Item -LiteralPath $Path -Destination $backupPath -Force
 
@@ -90,7 +206,8 @@ function Backup-ExistingTargets {
         [Parameter(Mandatory)]
         [string]$HostName,
         [AllowEmptyCollection()]
-        [string[]]$Paths
+        [string[]]$Paths,
+        [string]$BackupRoot = ""
     )
 
     $existingPaths = @($Paths | Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and (Test-Path -LiteralPath $_) })
@@ -98,20 +215,89 @@ function Backup-ExistingTargets {
         return $null
     }
 
-    $backupParent = Split-Path -Parent $existingPaths[0]
-    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-    $safeHostName = ($HostName.ToLowerInvariant() -replace "[^a-z0-9-]", "-")
-    $backupRoot = Join-Path $backupParent ("superpowers-{0}-backup-{1}" -f $safeHostName, $timestamp)
+    $backupRoot = if ([string]::IsNullOrWhiteSpace($BackupRoot)) {
+        $targetRoot = Split-Path -Parent $existingPaths[0]
+        $hostRoot = Split-Path -Parent $targetRoot
+        if ([string]::IsNullOrWhiteSpace($hostRoot)) {
+            $hostRoot = $targetRoot
+        }
+
+        Resolve-AbsolutePath -Path (Join-Path $hostRoot ".superpowers-backups")
+    }
+    else {
+        Resolve-AbsolutePath -Path $BackupRoot
+    }
 
     Ensure-Directory -Path $backupRoot
 
     foreach ($path in $existingPaths) {
         $leaf = Split-Path -Leaf $path
-        Copy-Item -LiteralPath $path -Destination (Join-Path $backupRoot $leaf) -Recurse -Force
+        $backupPath = Resolve-UniqueBackupPath -PreferredPath (Join-Path $backupRoot $leaf)
+        Copy-Item -LiteralPath $path -Destination $backupPath -Recurse -Force
     }
 
     Write-Host ("已为 {0} 创建备份：{1}" -f $HostName, $backupRoot)
     return $backupRoot
+}
+
+function Move-LegacyBackupDirectories {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$HostName,
+        [Parameter(Mandatory)]
+        [string]$TargetRoot,
+        [string]$BackupRoot = ""
+    )
+
+    if (-not (Test-Path -LiteralPath $TargetRoot)) {
+        return @()
+    }
+
+    $legacyDirectories = @(
+        Get-ChildItem -LiteralPath $TargetRoot -Directory -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like "superpowers-*-backup-*" }
+    )
+    if ($legacyDirectories.Count -eq 0) {
+        return @()
+    }
+
+    $backupParent = if ([string]::IsNullOrWhiteSpace($BackupRoot)) {
+        $hostRoot = Split-Path -Parent $TargetRoot
+        if ([string]::IsNullOrWhiteSpace($hostRoot)) {
+            $hostRoot = $TargetRoot
+        }
+
+        Resolve-AbsolutePath -Path (Join-Path $hostRoot ".superpowers-backups")
+    }
+    else {
+        Resolve-AbsolutePath -Path $BackupRoot
+    }
+
+    Ensure-Directory -Path $backupParent
+
+    $migratedPaths = New-Object System.Collections.Generic.List[string]
+    foreach ($legacyDirectory in $legacyDirectories) {
+        $destinationPath = Resolve-UniqueBackupPath -PreferredPath (Join-Path $backupParent $legacyDirectory.Name)
+
+        try {
+            Move-Item -LiteralPath $legacyDirectory.FullName -Destination $destinationPath -Force -ErrorAction Stop
+            $migratedPaths.Add($destinationPath)
+        }
+        catch {
+            throw (
+                "发现旧版 superpowers 备份目录还留在宿主的 skill 目录里，脚本尝试迁到安全位置但失败了。" +
+                "`n宿主：$HostName" +
+                "`n原位置：$($legacyDirectory.FullName)" +
+                "`n目标位置：$destinationPath" +
+                "`n请先关闭相关宿主，手工把这个目录移到上面的目标位置后，再重新运行脚本。" +
+                "`n原错误：$($_.Exception.Message)"
+            )
+        }
+    }
+
+    Write-Host ("已把 {0} 的旧版备份目录移到安全位置：{1}" -f $HostName, $backupParent)
+    return $migratedPaths
 }
 
 function Resolve-ExistingSkillAction {
@@ -121,6 +307,7 @@ function Resolve-ExistingSkillAction {
         [string]$HostName,
         [AllowEmptyCollection()]
         [string[]]$ExistingPaths,
+        [int]$DisplayCount = -1,
         [switch]$Force,
         [switch]$AssumeYes
     )
@@ -130,17 +317,19 @@ function Resolve-ExistingSkillAction {
         return $false
     }
 
+    $resolvedDisplayCount = if ($DisplayCount -ge 0) { $DisplayCount } else { $existingPaths.Count }
+
     if ($Force) {
-        Write-Host ("{0}：发现 {1} 个已安装的 superpowers skill，将直接更新。" -f $HostName, $existingPaths.Count)
+        Write-Host ("{0}：发现 {1} 个已安装的 superpowers skill，将直接更新。" -f $HostName, $resolvedDisplayCount)
         return $true
     }
 
     if ($AssumeYes) {
-        Write-Host ("{0}：发现 {1} 个已安装的 superpowers skill。由于使用了 -AssumeYes，已自动确认覆盖。" -f $HostName, $existingPaths.Count)
+        Write-Host ("{0}：发现 {1} 个已安装的 superpowers skill。由于使用了 -AssumeYes，已自动确认覆盖。" -f $HostName, $resolvedDisplayCount)
         return $true
     }
 
-    Write-Warning ("{0}：发现 {1} 个已安装的 superpowers skill。" -f $HostName, $existingPaths.Count)
+    Write-Warning ("{0}：发现 {1} 个已安装的 superpowers skill。" -f $HostName, $resolvedDisplayCount)
     Write-Host ""
     Write-Host "这通常说明你不是第一次安装，而是在重装或更新 superpowers。"
     Write-Host "建议直接覆盖旧的 superpowers 安装。脚本会先备份这些已有的 superpowers skill。"
@@ -271,7 +460,14 @@ function Remove-ExistingTarget {
             Write-Host "这通常是 Windows 当前占用、权限异常，或者安全软件暂时拦住了删除。"
 
             if ($AssumeYes) {
-                throw ("自动确认模式下无法继续。请先手动删除这个路径，再重新执行脚本：{0}" -f $Path)
+                Stop-SuperpowersRun `
+                    -Title "当前命令带了 -AssumeYes，脚本不能停在这里等你确认。" `
+                    -Details @(
+                        "请先手动删除这个路径："
+                        $Path
+                        ""
+                        "删完后，请重新执行刚才的命令。"
+                    )
             }
 
             Write-Host ""
@@ -285,7 +481,14 @@ function Remove-ExistingTarget {
             }
 
             if (Test-Path -LiteralPath $Path) {
-                throw ("目标仍然存在，请先手动删除后再重试：{0}" -f $Path)
+                Stop-SuperpowersRun `
+                    -Title "目标仍然还在，脚本不能继续。" `
+                    -Details @(
+                        "请先手动删除这个路径："
+                        $Path
+                        ""
+                        "删完后，再重新执行刚才的命令。"
+                    )
             }
         }
     }
@@ -518,7 +721,7 @@ function Set-MarkdownFrontMatterValue {
     }
 
     $updated = "---`n$frontMatter`n---`n$body"
-    Set-Content -LiteralPath $SkillFilePath -Value $updated -Encoding utf8
+    Write-TextFileWithRetry -Path $SkillFilePath -Value $updated -Purpose "更新 skill front matter"
 }
 
 function Rename-SkillFrontMatter {
@@ -694,7 +897,7 @@ function Append-SkillOverlay {
         $OverlayContent.Trim()
     ) -join "`n"
 
-    Set-Content -LiteralPath $SkillFilePath -Value ($normalized + "`n`n" + $overlaySection + "`n") -Encoding utf8
+    Write-TextFileWithRetry -Path $SkillFilePath -Value ($normalized + "`n`n" + $overlaySection + "`n") -Purpose "追加宿主适配说明"
 }
 
 function Get-JsonObject {
@@ -731,7 +934,45 @@ function Save-JsonObject {
     }
 
     $json = $Data | ConvertTo-Json -Depth 20
-    Set-Content -LiteralPath $Path -Value ($json + "`n") -Encoding utf8
+    Write-TextFileWithRetry -Path $Path -Value ($json + "`n") -Purpose "写入 JSON 文件"
+}
+
+function Write-TextFileWithRetry {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [Parameter(Mandatory)]
+        [string]$Value,
+        [string]$Purpose = "写入文件",
+        [int]$MaxAttempts = 8,
+        [int]$RetryDelayMilliseconds = 400
+    )
+
+    $lastError = $null
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        try {
+            Set-Content -LiteralPath $Path -Value $Value -Encoding utf8 -ErrorAction Stop
+            return
+        }
+        catch {
+            $lastError = $_
+            if ($attempt -lt $MaxAttempts) {
+                Start-Sleep -Milliseconds $RetryDelayMilliseconds
+            }
+        }
+    }
+
+    $message = @"
+$Purpose 失败，目标文件可能正被其他程序占用：
+$Path
+
+建议先关闭可能正在使用这个文件的程序，例如宿主客户端、文件预览器、搜索索引或安全软件，然后重新执行脚本。
+原始错误：$($lastError.Exception.Message)
+"@
+
+    throw $message
 }
 
 function Convert-SuperpowersCommitDateText {
@@ -1080,7 +1321,7 @@ function Show-SuperpowersVersionBanner {
     )
 
     Write-Host ""
-    Write-Host ("{0} 上游版本信息" -f $HostName)
+    Write-Host ("{0} 原仓库版本信息" -f $HostName)
     Write-Host ("当前已装版本：  {0}" -f $CurrentInstalledVersion)
     Write-Host ("准备安装版本：  {0}" -f $PlannedVersion)
 }
@@ -1110,7 +1351,7 @@ function Upsert-ManagedBlock {
     }
 
     if (-not (Test-Path -LiteralPath $Path)) {
-        Set-Content -LiteralPath $Path -Value ($block + "`n") -Encoding utf8
+        Write-TextFileWithRetry -Path $Path -Value ($block + "`n") -Purpose "写入说明文件"
         return
     }
 
@@ -1129,13 +1370,13 @@ function Upsert-ManagedBlock {
 
     if (($beginCount -eq 1) -and ($endCount -eq 1)) {
         $updated = [regex]::Replace($existing, $pattern, $block, 1)
-        Set-Content -LiteralPath $Path -Value ($updated.TrimEnd() + "`n") -Encoding utf8
+        Write-TextFileWithRetry -Path $Path -Value ($updated.TrimEnd() + "`n") -Purpose "更新说明文件"
         return
     }
 
     $separator = if ([string]::IsNullOrWhiteSpace($existing)) { "" } else { "`n`n" }
     $merged = $existing.TrimEnd() + $separator + $block + "`n"
-    Set-Content -LiteralPath $Path -Value $merged -Encoding utf8
+    Write-TextFileWithRetry -Path $Path -Value $merged -Purpose "追加说明文件"
 }
 
 function New-ClineChineseTriggerRule {
@@ -1210,8 +1451,13 @@ function New-DroidChineseTriggerGuide {
 Export-ModuleMember -Function @(
     "Assert-WindowsOnly",
     "Assert-RequiredCommand",
+    "Resolve-BackupSessionRoot",
+    "Get-HostBackupRoot",
+    "Show-HostSectionStart",
+    "Show-HostStep",
     "Backup-ExistingFile",
     "Backup-ExistingTargets",
+    "Move-LegacyBackupDirectories",
     "Confirm-UserMergeAction",
     "Resolve-ExistingSkillAction",
     "Ensure-Directory",
@@ -1234,6 +1480,7 @@ Export-ModuleMember -Function @(
     "Append-SkillOverlay",
     "Get-JsonObject",
     "Save-JsonObject",
+    "Write-TextFileWithRetry",
     "Get-SuperpowersSourceVersionInfo",
     "Get-InstalledSuperpowersVersionText",
     "Resolve-UpstreamRef",

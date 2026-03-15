@@ -4,23 +4,27 @@
 
 维护时请始终按下面这条边界来做：
 
-- upstream `obra/superpowers` 继续作为事实来源
+- 原版仓库 `obra/superpowers` 继续作为事实来源
 - 本仓库主要维护宿主适配层、中文触发提示、中文文档输出约束
-- 不要为了中文化去大规模改写 upstream skill 主体
+- 不要为了中文化去大规模改写原版 skill 主体
 - 能用宿主原生机制时，优先用宿主原生机制
 
 ## 仓库结构
 
 | 路径 | 作用 |
 | --- | --- |
-| `vendor/superpowers` | vendored upstream 全量内容 |
+| `vendor/superpowers` | vendored 原版 skill 全量内容 |
 | `templates` | 各宿主的 overlay、规则块、说明块 |
 | `data/zh-cn-skill-triggers.json` | skill 名称到中文触发提示的映射 |
 | `scripts/powershell/Install-Superpowers.Common.psm1` | 公共安装函数 |
 | `scripts/powershell/install-*.ps1` | 各宿主安装脚本 |
 | `scripts/powershell/install-all.ps1` | 批量安装入口 |
 | `scripts/powershell/update-all.ps1` | 更新当前仓库并重装 |
-| `scripts/powershell/refresh-upstream-and-reinstall.ps1` | 刷新 vendored upstream 后强制重装 |
+| `scripts/powershell/refresh-upstream-and-reinstall.ps1` | 刷新 vendored 原版 skill 后强制重装 |
+| `README.md` | 首页落地页，先讲价值、安全和安装入口 |
+| `docs/ai-agent-install.md` | 给 AI agent 和普通用户直接复制的安装说明 |
+| `docs/customize-triggers.md` | 自定义中文触发词的最短说明 |
+| `docs/*-zh-prompts.md` | 四个宿主各自的使用方式、示例 prompt 和触发方式 |
 
 ## 脚本目录规范
 
@@ -30,18 +34,30 @@
 - 如果以后有人要补其他系统，请在 `scripts/<runtime>/` 下新增，不要把逻辑继续堆进 `scripts/powershell/`
 - 新运行时尽量沿用同名入口：`install-all`、`update-all`、`refresh-upstream-and-reinstall`、`install-<host>`
 
+## 文档写法约束
+
+- `README.md` 保持“落地页”风格：先讲它能做什么、为什么安全、怎么安装，再把细节导到 `docs/`
+- 不要把宿主细节、完整 prompt 集合、维护细节全部堆回首页
+- 宿主差异放到各自文档，例如 `docs/cline-zh-prompts.md`
+- 触发词自定义说明尽量集中在 `docs/customize-triggers.md`
+- 适合画流程、决策树、工作流的内容，优先用 Mermaid，不要只写成长段文字
+
 ## 用户配置保护策略
 
 - 不要整文件覆盖用户现有的 `AGENTS.md`、`CODEBUDDY.md`
-- 这类说明文件只允许改我们自己加进去的那一段
+- `AGENTS.md` / `CODEBUDDY.md` 只允许改本适配仓库写入的专用说明段
 - 如果我们那一段的开始/结束标记不完整、重复、顺序异常，脚本要直接停止，不能猜着写
 - `CodeBuddy` 的 `.codebuddy/settings.json` 不要强改用户已经存在的 `language`
 - `Cline` 不要占用通用规则文件名，避免撞用户已有的 `00-*`、`10-*` 规则
 - 改动前先自动备份
+- 备份要按“单次执行一个批次目录”来组织：`User` scope 放在 `~/.superpowers-backups/<时间戳>/`，`Project` scope 放在 `<项目根>/.superpowers-backups/<时间戳>/`
+- 同一次执行产生的备份，要在这个批次目录下再按宿主分目录，例如 `cline/`、`droid/`、`opencode/`、`codebuddy/`
+- 宿主目录下再按 `skills`、`files`、`legacy-skill-backups` 归类，不能把整包 skill 备份留在 `skills` / `skill` 目录里
+- 如果发现旧版把备份目录留在宿主的 `skills` / `skill` 目录里，脚本要先迁走；迁不动就停止并提示用户手工处理
 - 如果遇到旧版遗留文件、格式冲突、或看不准是不是用户自己写的内容，先告诉用户怎么合并，再等用户确认
 - 如果某个宿主里已经装过我们的 superpowers skill，默认按宿主只问一次：覆盖、只补缺少的、或取消；不要刷一长串吓人的 warning
 - `update-all.ps1` 和 `refresh-upstream-and-reinstall.ps1` 这种“更新型”入口，要先明确提醒“接下来会覆盖已有 superpowers 安装”，确认后再继续；只有 `-AssumeYes` 才能跳过这一步
-- 安装前先展示“当前已装 upstream 版本”和“本次准备安装的 upstream 版本”；优先显示版本 tag，并尽量带上日期；拿不到时再明确显示未知
+- 安装前先展示“当前已装 superpowers 原仓库版本”和“本次准备安装的 superpowers 原仓库版本”；优先显示版本 tag，并尽量带上日期；拿不到时再明确显示未知
 - 如果覆盖旧 skill 时自动删除失败，不要继续硬装；要提示用户手工删除，再等用户确认
 
 推荐备份这些文件：
@@ -73,7 +89,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 - 加 `-AssumeYes` 代表需要自动确认，适合脚本化场景
 - 如果 `-Force` / `-AssumeYes` 过程中删除旧 skill 失败，脚本应该停下来报清楚，不要偷偷跳过
 
-### 2. 同步 upstream
+### 2. 同步原版仓库
 
 如果 `obra/superpowers` 更新了，优先用完整刷新流程：
 
@@ -81,9 +97,9 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\sandbox
 ```
 
-默认会优先取 upstream 最新版本 tag，不直接追 `main`；只有你显式传 `-Ref main` 时才会用 `main`。
+默认会优先取原版仓库最新版本 tag，不直接追 `main`；只有你显式传 `-Ref main` 时才会用 `main`。
 
-如果你已经有一个本地 upstream checkout：
+如果你已经有一个原版 skill 的本地目录：
 
 ```powershell
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path\to\superpowers -Targets All -Scope Project -ProjectRoot E:\path\to\sandbox
@@ -91,7 +107,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 
 这个脚本会额外检查两件事：
 
-- 有没有新的 upstream skill 还没写中文触发词
+- 有没有新的原版 skill 还没写中文触发词
 - `data/zh-cn-skill-triggers.json` 里有没有已经失效的旧条目
 
 如果只想刷新 `vendor/superpowers`，不安装：
@@ -110,11 +126,11 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 
 - 保持触发短语贴近中文真实说法，不要堆同义词
 - 优先覆盖“计划、评审、调试、并行代理、TDD、头脑风暴”这类高频表达
-- 新增 upstream skill 时，必须补对应中文触发条目
+- 新增原版 skill 时，必须补对应中文触发条目
 
 ### 中文文档输出
 
-统一通过宿主模板层约束，不直接改 upstream skill 主体。
+统一通过宿主模板层约束，不直接改原版 skill 主体。
 
 当前实现方式：
 
@@ -122,7 +138,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 - `Droid`、`OpenCode`、`CodeBuddy` 通过 overlay / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
 - `Cline` 使用专用规则文件名 `90-superpowers-*.md`，不再占用早期那组通用文件名
-- `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出我们自己那一段时才会更新；识别不准就停下来
+- `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出本适配仓库写入的专用说明段时才会更新；识别不准就停下来
 
 如果要改这类行为，先看：
 
@@ -136,8 +152,8 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 请尽量遵守下面这几个约束：
 
 1. 先确认宿主官方支持的 skill / instruction 入口形式。
-2. 优先复用 upstream skill 文件和资源目录，不要手工复制改写每个 skill。
-3. 中文化只放在适配层，不放在 vendored upstream。
+2. 优先复用原版 skill 文件和资源目录，不要手工复制改写每个 skill。
+3. 中文化只放在适配层，不放在 vendored 原版 skill。
 4. 安装脚本要支持 `User` 和 `Project` 两种作用域，除非宿主本身不支持。
 5. 如果宿主支持链接安装和复制安装，优先把复制模式做稳，再考虑 `Junction`。
 
@@ -147,7 +163,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 2. 在 [scripts/powershell/install-all.ps1](scripts/powershell/install-all.ps1) 和 [scripts/powershell/refresh-upstream-and-reinstall.ps1](scripts/powershell/refresh-upstream-and-reinstall.ps1) 接入
 3. 在 `templates/<host>/` 放宿主专属 overlay 或说明块
 4. 在 [docs/compatibility-matrix.md](docs/compatibility-matrix.md) 补兼容说明
-5. 在 [README.md](README.md) 和 [docs/zh-cn-usage-guide.md](docs/zh-cn-usage-guide.md) 补用法
+5. 在 [README.md](README.md)、[docs/zh-cn-usage-guide.md](docs/zh-cn-usage-guide.md) 和必要时对应宿主文档里补用法
 
 ## 验证建议
 
@@ -159,7 +175,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\sandbox -Force
 ```
 
-确认输出里的 `Installed` 数量和 upstream skill 数量一致。
+确认输出里的 `Installed` 数量和原版 skill 数量一致。
 
 ### 刷新检查
 
@@ -185,7 +201,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 
 另外要检查：
 
-- `AGENTS.md` / `CODEBUDDY.md` 是否只改了我们自己那一段
+- `AGENTS.md` / `CODEBUDDY.md` 是否只改了本适配仓库写入的专用说明段
 - 如果手工制造半截标记或重复标记，脚本是否会停止，而不是继续往里写
 - `.codebuddy/settings.json` 如果原来已有 `language`，脚本是否只告警而没有强改
 - 安装前是否能正确展示“当前已装版本”和“准备安装版本”

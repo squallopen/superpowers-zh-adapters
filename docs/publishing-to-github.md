@@ -8,7 +8,8 @@
 ## 发布前检查
 
 - 确认 `vendor/superpowers` 只是普通文件目录，不再带自己的 `.git`
-- 确认 [README.md](../README.md)、[docs/compatibility-matrix.md](compatibility-matrix.md)、[docs/zh-cn-usage-guide.md](zh-cn-usage-guide.md) 内容符合你想公开的描述
+- 确认 [README.md](../README.md) 仍然是一眼能看懂的首页，而不是把全部细节重新堆回去
+- 确认 [docs/compatibility-matrix.md](compatibility-matrix.md)、[docs/zh-cn-usage-guide.md](zh-cn-usage-guide.md)、[docs/ai-agent-install.md](ai-agent-install.md)、[docs/customize-triggers.md](customize-triggers.md) 内容符合你想公开的描述
 - 如果你要公开发布，补一个顶层 `LICENSE`
 
 ## 本地初始化

@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
@@ -24,6 +24,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+. (Join-Path $PSScriptRoot "Assert-Pwsh7.ps1")
+Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoundParameters
 
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
@@ -63,24 +66,26 @@ else {
 
 if (Test-Path -LiteralPath $previewSourceRoot) {
     $previewVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $previewSourceRoot -RepositoryUrl $RepositoryUrl
-    Write-Host ("准备安装的 upstream 版本：{0}" -f $previewVersionInfo["Display"])
+    Write-Host ("准备安装的 superpowers 原仓库版本：{0}" -f $previewVersionInfo["Display"])
 }
 else {
-    Write-Host "准备安装的 upstream 版本：未知（当前还拿不到源目录版本信息）"
+    Write-Host "准备安装的 superpowers 原仓库版本：未知（当前还拿不到源目录版本信息）"
 }
 
 Confirm-UserMergeAction `
     -Title "即将按更新方式覆盖已安装的 superpowers 内容" `
     -Guidance @"
-这个命令不是“只补缺少的 skill”，而是按“更新 superpowers”来处理。
+这个命令适合“已经装过 superpowers，现在想整体更新一遍”的情况。
 
 继续后会发生这些事：
-1. 先更新当前仓库
-2. 再覆盖已安装的 superpowers skill
-3. 对说明文件会尽量先备份再改
+1. 先更新这个适配仓库本身
+2. 再把你机器上已经装过的 superpowers skill 按新版本重新覆盖一遍
+3. 如需修改以下文件，脚本会自动备份后再修改：
+   - `AGENTS.md`
+   - `CODEBUDDY.md`
+   - Cline 的 3 个专用规则文件
 
-如果第一次安装，或者你只想保留现状、只补缺少的 skill，
-请改用：
+如果第一次安装，请改用：
 pwsh .\scripts\powershell\install-all.ps1
 "@ `
     -AssumeYes:$AssumeYes

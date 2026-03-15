@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$SourcePath,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
@@ -8,6 +8,9 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+. (Join-Path $PSScriptRoot "Assert-Pwsh7.ps1")
+Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoundParameters
 
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 

@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
@@ -8,6 +8,7 @@ param(
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
     [switch]$UpdateSource,
     [string]$NamePrefix = "superpowers-",
+    [string]$BackupSessionRoot,
     [switch]$Force,
     [switch]$AssumeYes
 )
@@ -17,8 +18,14 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
+. (Join-Path $PSScriptRoot "Assert-Pwsh7.ps1")
+Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoundParameters
+
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
+
+$hostName = "Cline"
+Show-HostSectionStart -HostName $hostName
 
 $bundledVendorRoot = Join-Path $repoRoot "vendor/superpowers"
 
@@ -66,6 +73,20 @@ else {
 $overlayRoot = Join-Path $repoRoot "templates/cline/skill-overlays"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
+$backupSessionBase = if ($Scope -eq "User") {
+    Join-Path $HOME ".superpowers-backups"
+}
+else {
+    Join-Path $ProjectRoot ".superpowers-backups"
+}
+$backupSessionWasProvided = -not [string]::IsNullOrWhiteSpace($BackupSessionRoot)
+$BackupSessionRoot = Resolve-BackupSessionRoot -BaseRoot $backupSessionBase -BackupSessionRoot $BackupSessionRoot
+if (-not $backupSessionWasProvided) {
+    Write-Host ("本次备份目录：{0}" -f $BackupSessionRoot)
+}
+$skillBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Cline" -Subdirectory "skills"
+$fileBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Cline" -Subdirectory "files"
+$legacyBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Cline" -Subdirectory "legacy-skill-backups"
 $ruleFileNames = @{
     Bootstrap = "90-superpowers-bootstrap.md"
     Trigger   = "91-superpowers-skill-triggers-zh-cn.md"
@@ -80,6 +101,8 @@ $metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
 Ensure-Directory -Path $targetRuleRoot
+Show-HostStep -HostName $hostName -Message "检查旧版备份目录..."
+Move-LegacyBackupDirectories -HostName "Cline" -TargetRoot $targetSkillRoot -BackupRoot $legacyBackupRoot | Out-Null
 
 $skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
@@ -93,6 +116,7 @@ $sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -R
 $currentInstalledVersion = Get-InstalledSuperpowersVersionText `
     -MetadataRoot $metadataRoot `
     -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-HostStep -HostName $hostName -Message "检查版本信息..."
 Show-SuperpowersVersionBanner `
     -HostName "Cline" `
     -CurrentInstalledVersion $currentInstalledVersion `
@@ -104,9 +128,11 @@ $overwriteExistingSkills = Resolve-ExistingSkillAction `
     -AssumeYes:$AssumeYes
 
 if ($overwriteExistingSkills) {
-    Backup-ExistingTargets -HostName "Cline" -Paths $existingSkillTargets | Out-Null
+    Show-HostStep -HostName $hostName -Message "备份已有 skill..."
+    Backup-ExistingTargets -HostName "Cline" -Paths $existingSkillTargets -BackupRoot $skillBackupRoot | Out-Null
 }
 
+Show-HostStep -HostName $hostName -Message "开始安装 skill..."
 foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot $installedName
@@ -136,7 +162,7 @@ foreach ($skillDirectory in $skillDirectories) {
             -OriginalName $skillDirectory.Name `
             -OverlayContent $overlayContent
 
-        Set-Content -LiteralPath (Join-Path $targetSkillPath "prompt.md") -Value $prompt -Encoding utf8
+        Write-TextFileWithRetry -Path (Join-Path $targetSkillPath "prompt.md") -Value $prompt -Purpose "写入 Cline prompt"
     }
 
     $installed.Add($installedName)
@@ -149,7 +175,8 @@ $tokens = @{
 foreach ($legacyRuleFileName in $legacyRuleFileNames) {
     $legacyRulePath = Join-Path $targetRuleRoot $legacyRuleFileName
     if (Test-Path -LiteralPath $legacyRulePath) {
-        Backup-ExistingFile -Path $legacyRulePath -Reason "准备人工检查旧版 Cline 规则文件，先备份。" | Out-Null
+        Show-HostStep -HostName $hostName -Message "备份旧版 Cline 规则文件..."
+        Backup-ExistingFile -Path $legacyRulePath -Reason "准备人工检查旧版 Cline 规则文件，先备份。" -BackupRoot $fileBackupRoot | Out-Null
 
         Confirm-UserMergeAction `
             -Title "发现旧版 Cline 规则文件：$legacyRulePath" `
@@ -183,21 +210,22 @@ $managedRulePaths = @(
 )
 
 foreach ($managedRulePath in $managedRulePaths) {
-    Backup-ExistingFile -Path $managedRulePath -Reason "更新 Cline 专用 superpowers 规则文件前先备份。" | Out-Null
+    Show-HostStep -HostName $hostName -Message "备份并更新 Cline 规则文件..."
+    Backup-ExistingFile -Path $managedRulePath -Reason "更新 Cline 专用 superpowers 规则文件前先备份。" -BackupRoot $fileBackupRoot | Out-Null
 }
 
 $bootstrapRule = Expand-TemplateFile `
     -TemplatePath (Join-Path $repoRoot "templates/cline/rules/00-superpowers-bootstrap.md") `
     -Tokens $tokens
-Set-Content -LiteralPath (Join-Path $targetRuleRoot $ruleFileNames.Bootstrap) -Value $bootstrapRule -Encoding utf8
+Write-TextFileWithRetry -Path (Join-Path $targetRuleRoot $ruleFileNames.Bootstrap) -Value $bootstrapRule -Purpose "写入 Cline bootstrap 规则"
 
 $outputRule = Expand-TemplateFile `
     -TemplatePath (Join-Path $repoRoot "templates/cline/rules/10-output-docs-zh-cn.md") `
     -Tokens $tokens
-Set-Content -LiteralPath (Join-Path $targetRuleRoot $ruleFileNames.Output) -Value $outputRule -Encoding utf8
+Write-TextFileWithRetry -Path (Join-Path $targetRuleRoot $ruleFileNames.Output) -Value $outputRule -Purpose "写入 Cline 中文输出规则"
 
 $triggerRule = New-ClineChineseTriggerRule -TriggerData $triggerData -NamePrefix $NamePrefix
-Set-Content -LiteralPath (Join-Path $targetRuleRoot $ruleFileNames.Trigger) -Value $triggerRule -Encoding utf8
+Write-TextFileWithRetry -Path (Join-Path $targetRuleRoot $ruleFileNames.Trigger) -Value $triggerRule -Purpose "写入 Cline 中文触发规则"
 
 $versionInfoToRecord = $null
 if (($existingSkillTargets.Count -gt 0) -and (-not $overwriteExistingSkills)) {
@@ -227,7 +255,7 @@ if ($versionInfoToRecord) {
 }
 
 Write-Host ""
-Write-Host "Cline 安装完成。"
+Write-Host ("[{0}] 安装已完成。" -f $hostName)
 Write-Host "来源：        $sourceRoot"
 Write-Host "Skill 目录：   $targetSkillRoot"
 Write-Host "规则目录：     $targetRuleRoot"

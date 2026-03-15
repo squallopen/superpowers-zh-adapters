@@ -1,6 +1,58 @@
-# Cline 中文示例 Prompt
+# Cline 使用说明
 
-这份文档给的是适合 `Cline + superpowers` 适配层的中文说法，重点是让 Cline 更稳定地命中正确 skill。
+这份文档讲的是 `Cline + superpowers` 怎么更顺手地用。
+
+重点不是“背术语”，而是知道什么时候用自然中文说法，什么时候直接点名 skill。
+
+## 先记住 3 种触发方式
+
+### 1. 自然中文说法
+
+最推荐，直接这样说就行：
+
+- “先做需求分析和总体设计”
+- “先把这个需求拆成实施计划”
+- “这个 bug 用 TDD 修”
+- “先做代码审查”
+
+### 2. 直接点名 skill
+
+默认安装名带前缀 `superpowers-`，所以建议写完整名字：
+
+- `superpowers-brainstorming`
+- `superpowers-writing-plans`
+- `superpowers-systematic-debugging`
+- `superpowers-finishing-a-development-branch`
+
+### 3. 如果宿主支持 slash / command 形式
+
+也优先写完整名字：
+
+- `/superpowers-writing-plans`
+- `/superpowers-finishing-a-development-branch`
+
+注意：
+
+- 默认安装下，不建议直接写 `/writing-plans`
+- 默认安装下，也不建议直接写 `/finishing-a-development-branch`
+- 只有你安装时显式用了 `-NamePrefix ''`，才更适合不带前缀的名字
+
+## Cline 最适合怎么理解
+
+- `Cline` 里涉及多个 agent 时，更适合“并行调研，主线程实施”
+- 所以 `dispatching-parallel-agents` 和 `subagent-driven-development` 在 Cline 里都更偏“并行调研 + 主线程改代码”
+- 如果你希望输出中文文档，直接写“计划 / 说明 / 结论用中文”就够了
+
+## 常用工作流
+
+```mermaid
+flowchart LR
+    A["brainstorming"] --> B["writing-plans"]
+    B --> C["executing-plans"]
+    C --> D["requesting-code-review"]
+    D --> E["verification-before-completion"]
+    E --> F["finishing-a-development-branch"]
+```
 
 ## 启动工作流
 
@@ -115,3 +167,7 @@
 - 在 Cline 里，涉及多个 agent 的话，最好明确写出“调研并行，主线程实施”，这样最符合当前能力边界。
 - 如果你希望输出中文文档，直接写“计划/说明/结论用中文”，不要要求代码和标识符翻译。
 - 如果上下文里已经有计划，直接说“按计划继续实现”，不要重复让它再 brainstorm 一轮。
+
+## 想改中文触发词
+
+- [自定义中文触发词](customize-triggers.md)

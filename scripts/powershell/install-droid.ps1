@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
@@ -10,6 +10,7 @@ param(
     [ValidateSet("Copy", "Junction")]
     [string]$InstallMode = "Copy",
     [string]$NamePrefix = "superpowers-",
+    [string]$BackupSessionRoot,
     [switch]$Force,
     [switch]$AssumeYes
 )
@@ -19,8 +20,14 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
+. (Join-Path $PSScriptRoot "Assert-Pwsh7.ps1")
+Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoundParameters
+
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
+
+$hostName = "Droid"
+Show-HostSectionStart -HostName $hostName
 
 $bundledVendorRoot = Join-Path $repoRoot "vendor/superpowers"
 
@@ -72,9 +79,25 @@ else {
 $overlayRoot = Join-Path $repoRoot "templates/droid/skill-overlays"
 $triggerDataPath = Join-Path $repoRoot "data/zh-cn-skill-triggers.json"
 $triggerData = Get-SkillTriggerData -DataPath $triggerDataPath
+$backupSessionBase = if ($Scope -eq "User") {
+    Join-Path $HOME ".superpowers-backups"
+}
+else {
+    Join-Path $ProjectRoot ".superpowers-backups"
+}
+$backupSessionWasProvided = -not [string]::IsNullOrWhiteSpace($BackupSessionRoot)
+$BackupSessionRoot = Resolve-BackupSessionRoot -BaseRoot $backupSessionBase -BackupSessionRoot $BackupSessionRoot
+if (-not $backupSessionWasProvided) {
+    Write-Host ("本次备份目录：{0}" -f $BackupSessionRoot)
+}
+$skillBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Droid" -Subdirectory "skills"
+$fileBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Droid" -Subdirectory "files"
+$legacyBackupRoot = Get-HostBackupRoot -BackupSessionRoot $BackupSessionRoot -HostName "Droid" -Subdirectory "legacy-skill-backups"
 $metadataRoot = Split-Path -Parent $targetSkillRoot
 
 Ensure-Directory -Path $targetSkillRoot
+Show-HostStep -HostName $hostName -Message "检查旧版备份目录..."
+Move-LegacyBackupDirectories -HostName "Droid" -TargetRoot $targetSkillRoot -BackupRoot $legacyBackupRoot | Out-Null
 
 $skillDirectories = Get-UpstreamSkillDirectories -SourceRoot $sourceRoot
 $installed = New-Object System.Collections.Generic.List[string]
@@ -88,6 +111,7 @@ $sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $sourceRoot -R
 $currentInstalledVersion = Get-InstalledSuperpowersVersionText `
     -MetadataRoot $metadataRoot `
     -HasExistingInstall:($existingSkillTargets.Count -gt 0)
+Show-HostStep -HostName $hostName -Message "检查版本信息..."
 Show-SuperpowersVersionBanner `
     -HostName "Droid" `
     -CurrentInstalledVersion $currentInstalledVersion `
@@ -99,9 +123,11 @@ $overwriteExistingSkills = Resolve-ExistingSkillAction `
     -AssumeYes:$AssumeYes
 
 if ($overwriteExistingSkills) {
-    Backup-ExistingTargets -HostName "Droid" -Paths $existingSkillTargets | Out-Null
+    Show-HostStep -HostName $hostName -Message "备份已有 skill..."
+    Backup-ExistingTargets -HostName "Droid" -Paths $existingSkillTargets -BackupRoot $skillBackupRoot | Out-Null
 }
 
+Show-HostStep -HostName $hostName -Message "开始安装 skill..."
 foreach ($skillDirectory in $skillDirectories) {
     $installedName = Get-InstalledSkillName -OriginalName $skillDirectory.Name -NamePrefix $NamePrefix
     $targetSkillPath = Join-Path $targetSkillRoot $installedName
@@ -164,7 +190,8 @@ if (-not [string]::IsNullOrWhiteSpace($triggerGuide)) {
     $agentsBlock = $agentsBlock.TrimEnd() + "`n`n" + $triggerGuide
 }
 
-Backup-ExistingFile -Path $agentsPath -Reason "更新 Droid 的 AGENTS.md 中 superpowers 说明段前先备份。" | Out-Null
+Show-HostStep -HostName $hostName -Message "备份并更新 AGENTS.md..."
+Backup-ExistingFile -Path $agentsPath -Reason "更新 Droid 的 AGENTS.md 中 superpowers 说明段前先备份。" -BackupRoot $fileBackupRoot | Out-Null
 
 Upsert-ManagedBlock `
     -Path $agentsPath `
@@ -199,7 +226,7 @@ if ($versionInfoToRecord) {
 }
 
 Write-Host ""
-Write-Host "Droid 安装完成。"
+Write-Host ("[{0}] 安装已完成。" -f $hostName)
 Write-Host "来源：        $sourceRoot"
 Write-Host "Skill 目录：   $targetSkillRoot"
 Write-Host "AGENTS.md：   $agentsPath"

@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
@@ -22,6 +22,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+. (Join-Path $PSScriptRoot "Assert-Pwsh7.ps1")
+Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoundParameters
 
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
@@ -60,7 +63,7 @@ foreach ($entry in $triggerData) {
 }
 
 Write-Host ""
-Write-Host "上游刷新结果"
+Write-Host "原仓库刷新结果"
 Write-Host "发现 skill 数量：      $($installedSkillNames.Count)"
 Write-Host "缺少中文触发：        $($missingTriggerNames.Count)"
 Write-Host "多余中文触发：        $($extraTriggerNames.Count)"
@@ -74,20 +77,19 @@ if ($extraTriggerNames.Count -gt 0) {
 }
 
 $plannedVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $vendorRoot -RepositoryUrl $RepositoryUrl
-Write-Host ("准备安装的 upstream 版本：{0}" -f $plannedVersionInfo["Display"])
+Write-Host ("准备安装的 superpowers 原仓库版本：{0}" -f $plannedVersionInfo["Display"])
 Write-Host ""
 Confirm-UserMergeAction `
     -Title "即将按刷新上游并重装方式覆盖已安装的 superpowers 内容" `
     -Guidance @"
-这个命令会先刷新仓库里的 upstream，再重新覆盖安装到目标宿主。
+这个命令适合“superpowers 原仓库已经出了新版本，我想同步过来再整体重装”的情况。
 
 继续后会发生这些事：
-1. 刷新 vendor/superpowers
-2. 检查中文触发配置有没有缺漏
-3. 覆盖已安装的 superpowers skill
+1. 先把仓库里的 `vendor/superpowers` 刷到新的上游版本
+2. 顺便检查中文触发配置有没有缺漏
+3. 再把你机器上已经装过的 superpowers skill 按新版本重新覆盖一遍
 
-如果第一次安装，或者你不想覆盖已有安装，
-请改用：
+如果第一次安装，请改用：
 pwsh .\scripts\powershell\install-all.ps1
 "@ `
     -AssumeYes:$AssumeYes

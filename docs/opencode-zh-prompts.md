@@ -1,6 +1,49 @@
-# OpenCode 中文示例 Prompt
+# OpenCode 使用说明
 
-这份文档给的是适合 `OpenCode + superpowers` 适配层的中文说法。相比 Cline，OpenCode 可以更自然地配合自己的 `plan` / `build` agent 使用。
+这份文档讲的是 `OpenCode + superpowers` 怎么更顺手地用。
+
+相比 `Cline`，`OpenCode` 可以更自然地配合自己的 `plan` / `build` agent 使用。
+
+## 先记住 3 种触发方式
+
+### 1. 自然中文说法
+
+例如：
+
+- “先做需求分析和总体设计”
+- “把这个任务拆成几个工作面并行推进”
+- “先跑完验证再说完成”
+
+### 2. 直接点名 skill
+
+默认安装名带前缀 `superpowers-`，所以建议写完整名字：
+
+- `superpowers-writing-plans`
+- `superpowers-dispatching-parallel-agents`
+- `superpowers-finishing-a-development-branch`
+
+### 3. 如果宿主支持 slash / command 形式
+
+也优先写完整名字：
+
+- `/superpowers-writing-plans`
+- `/superpowers-finishing-a-development-branch`
+
+## OpenCode 最适合怎么理解
+
+- `OpenCode` 有自己的 `plan` / `build` 能力，适合阶段拆分
+- 但最终整合、验收和收尾，仍建议放在主线程
+
+## 常用工作流
+
+```mermaid
+flowchart LR
+    A["brainstorming"] --> B["writing-plans"]
+    B --> C["executing-plans 或 subagent-driven-development"]
+    C --> D["requesting-code-review"]
+    D --> E["verification-before-completion"]
+    E --> F["finishing-a-development-branch"]
+```
 
 ## 启动工作流
 
@@ -61,3 +104,7 @@
 - OpenCode 的 `plan` / `build` 能力适合阶段拆分，但不要把最终整合和验收完全交出去。
 - 文档型输出默认已经偏向中文；如果你特别在意，可以显式补一句“计划和结论用中文”。
 - 代码、命令、路径、日志和接口名仍然建议保持原文。
+
+## 想改中文触发词
+
+- [自定义中文触发词](customize-triggers.md)

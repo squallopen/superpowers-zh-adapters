@@ -1,6 +1,49 @@
-# CodeBuddy 中文示例 Prompt
+# CodeBuddy 使用说明
 
-这份文档给的是适合 `CodeBuddy + superpowers` 适配层的中文说法。重点是让中文对话更稳定地命中对应 skill，同时让产出的计划、评审、总结默认用中文。
+这份文档讲的是 `CodeBuddy + superpowers` 怎么更顺手地用。
+
+重点是让中文对话更稳定地命中对应 skill，同时让产出的计划、评审、总结默认用中文。
+
+## 先记住 3 种触发方式
+
+### 1. 自然中文说法
+
+例如：
+
+- “先做需求分析和总体设计”
+- “先把这个需求拆成实施计划”
+- “这个改动先做代码审查”
+
+### 2. 直接点名 skill
+
+默认安装名带前缀 `superpowers-`，所以建议写完整名字：
+
+- `superpowers-brainstorming`
+- `superpowers-writing-plans`
+- `superpowers-finishing-a-development-branch`
+
+### 3. 如果宿主支持 slash / command 形式
+
+也优先写完整名字：
+
+- `/superpowers-writing-plans`
+- `/superpowers-finishing-a-development-branch`
+
+## CodeBuddy 最适合怎么理解
+
+- `CodeBuddy` 的项目级 skill 结构和 `CODEBUDDY.md` 规则很适合中文触发和中文文档输出
+- 对多代理 / 并行类 skill，当前更适合按“隔离面拆分 + 主线程收口”理解
+
+## 常用工作流
+
+```mermaid
+flowchart LR
+    A["brainstorming"] --> B["writing-plans"]
+    B --> C["executing-plans"]
+    C --> D["requesting-code-review"]
+    D --> E["verification-before-completion"]
+    E --> F["finishing-a-development-branch"]
+```
 
 ## 启动工作流
 
@@ -61,3 +104,7 @@
 - 项目级安装优先使用 `.codebuddy/skills` 和项目根 `CODEBUDDY.md`。
 - 对多代理/并行类 upstream skill，当前更适合按“隔离面拆分 + 主线程收口”来执行。
 - 如果你希望新文档文件直接用中文名，可以明确补一句“未指定文件名时用中文文档名”。
+
+## 想改中文触发词
+
+- [自定义中文触发词](customize-triggers.md)
