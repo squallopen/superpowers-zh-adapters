@@ -60,6 +60,13 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
 ```
 
+如果你还改了输出规则，比如想把默认文档目录从 `docs/` 改成别的地方，记得同时调整这些模板：
+
+- [templates/cline/rules/10-output-docs-zh-cn.md](../templates/cline/rules/10-output-docs-zh-cn.md)
+- [templates/droid/AGENTS.block.md](../templates/droid/AGENTS.block.md)
+- [templates/opencode/AGENTS.block.md](../templates/opencode/AGENTS.block.md)
+- [templates/codebuddy/CODEBUDDY.block.md](../templates/codebuddy/CODEBUDDY.block.md)
+
 ## 除了自然中文，还可以怎么触发
 
 默认安装名带前缀 `superpowers-`，所以直接点名 skill 时，建议写完整名字：

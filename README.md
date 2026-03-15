@@ -28,7 +28,8 @@ flowchart TD
 
 - 保留 14 个原版 skill 主体，核心内容仍以英文 `SKILL.md` 为准
 - 让中文对话更容易触发需求分析、总体设计、详细设计、写计划、TDD、代码审查、收尾等工作流
-- 让计划、评审、总结、方案等文档型输出默认用简体中文
+- 让计划、评审、总结、方案等文档型输出默认用简体中文，并尽量写得通俗易懂
+- 未指定路径时，文档型文件默认优先放到 `docs/`
 - 未指定文件名时，优先使用中文文档名
 - 支持 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`
 
@@ -102,6 +103,13 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 - 什么时候用自然中文说法
 - 什么时候直接点名 `superpowers-writing-plans`
 - 如果宿主支持 slash / command 形式，怎么写成 `/superpowers-writing-plans`
+
+默认文档输出规则现在是：
+
+- 未指定路径时，优先放 `docs/`
+- 未指定文件名时，优先用中文文件名
+- 正文默认用简体中文
+- 技术术语保留准确表达，但整体尽量写得通俗易懂
 
 ## 想改哪些中文词会触发哪些 skill
 

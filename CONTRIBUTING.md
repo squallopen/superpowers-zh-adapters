@@ -137,6 +137,8 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 - `Cline` 通过规则文件约束文档输出为简体中文
 - `Droid`、`OpenCode`、`CodeBuddy` 通过 overlay / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
+- 未指定路径时，文档型文件默认优先放 `docs/`
+- 文档型输出除了必要技术术语外，尽量写得通俗易懂
 - `Cline` 使用专用规则文件名 `90-superpowers-*.md`，不再占用早期那组通用文件名
 - `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出本适配仓库写入的专用说明段时才会更新；识别不准就停下来
 
