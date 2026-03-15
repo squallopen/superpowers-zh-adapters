@@ -1,154 +1,157 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1840 1260" role="img" aria-labelledby="title desc">
   <title id="title">Superpowers 首页工作流总览</title>
   <desc id="desc">从 using-superpowers 选工作流，再根据需求分析、计划、调试、测试、评审、验证和分支收尾进入对应 skill 的静态流程图。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f8f4ea"/>
-      <stop offset="55%" stop-color="#eef8f6"/>
-      <stop offset="100%" stop-color="#e9f1fb"/>
+      <stop offset="0%" stop-color="#faf5e8"/>
+      <stop offset="52%" stop-color="#edf7f5"/>
+      <stop offset="100%" stop-color="#e7eef9"/>
     </linearGradient>
-    <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse">
-      <circle cx="5" cy="5" r="1.6" fill="#86a3ad" opacity="0.14"/>
-      <circle cx="24" cy="16" r="1.6" fill="#86a3ad" opacity="0.1"/>
-      <circle cx="10" cy="26" r="1.3" fill="#86a3ad" opacity="0.08"/>
+    <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="1.5" fill="#84a0aa" opacity="0.14"/>
+      <circle cx="25" cy="17" r="1.5" fill="#84a0aa" opacity="0.1"/>
+      <circle cx="11" cy="28" r="1.25" fill="#84a0aa" opacity="0.08"/>
     </pattern>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
-      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#12384a" flood-opacity="0.14"/>
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#12384a" flood-opacity="0.14"/>
     </filter>
     <marker id="arrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L14,7 L0,14 z" fill="#335c73"/>
+      <path d="M0,0 L14,7 L0,14 z" fill="#355c74"/>
     </marker>
     <style>
       .bg-grid { fill: url(#dots); }
-      .connector { fill: none; stroke: #335c73; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); opacity: 0.9; }
-      .connector-soft { fill: none; stroke: #567a8d; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); opacity: 0.55; stroke-dasharray: 10 12; }
+      .connector { fill: none; stroke: #355c74; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); opacity: 0.94; }
+      .connector-soft { fill: none; stroke: #6a8593; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); opacity: 0.55; stroke-dasharray: 12 12; }
       .card { filter: url(#shadow); }
       .card rect { stroke-width: 3; }
-      .title { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 28px; font-weight: 700; fill: #163247; }
-      .title-sm { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 26px; font-weight: 700; fill: #163247; }
-      .skill { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 17px; font-weight: 600; fill: #4f6a7f; }
-      .skill-sm { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 16px; font-weight: 600; fill: #4f6a7f; }
-      .diamond-title { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 31px; font-weight: 800; fill: #5d3700; }
-      .pill-text { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 18px; font-weight: 700; fill: #3e5c69; }
-      .footer { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 18px; font-weight: 600; fill: #57717b; }
+      .title { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 34px; font-weight: 760; fill: #183247; }
+      .title-sm { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 31px; font-weight: 760; fill: #183247; }
+      .skill { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 24px; font-weight: 620; fill: #4f6a7f; }
+      .skill-sm { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 22px; font-weight: 620; fill: #4f6a7f; }
+      .skill-xs { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 20px; font-weight: 620; fill: #4f6a7f; }
+      .diamond-title { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 38px; font-weight: 820; fill: #5f3800; }
+      .diamond-sub { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 23px; font-weight: 650; fill: #7a5a1d; }
+      .pill-text { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 20px; font-weight: 700; fill: #415f6e; }
+      .footer { font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 20px; font-weight: 600; fill: #56707b; }
     </style>
   </defs>
 
-  <rect width="1600" height="980" fill="url(#bg)"/>
-  <rect width="1600" height="980" class="bg-grid"/>
-  <circle cx="140" cy="110" r="190" fill="#fff7da" opacity="0.5"/>
-  <circle cx="1460" cy="140" r="220" fill="#dff4ef" opacity="0.46"/>
-  <circle cx="1350" cy="840" r="260" fill="#e3eefb" opacity="0.58"/>
-  <circle cx="260" cy="860" r="220" fill="#f9ebdf" opacity="0.42"/>
+  <rect width="1840" height="1260" fill="url(#bg)"/>
+  <rect width="1840" height="1260" class="bg-grid"/>
+  <circle cx="160" cy="130" r="210" fill="#fff7d8" opacity="0.5"/>
+  <circle cx="1680" cy="160" r="240" fill="#ddf5ef" opacity="0.45"/>
+  <circle cx="1550" cy="1040" r="320" fill="#e2ebfb" opacity="0.54"/>
+  <circle cx="300" cy="1080" r="270" fill="#faeadf" opacity="0.4"/>
 
-  <path class="connector" d="M320 176 C345 176 355 176 380 176"/>
-  <path class="connector" d="M700 176 C770 176 784 214 720 285"/>
-  <path class="connector" d="M742 258 C620 250 490 300 380 440"/>
-  <path class="connector" d="M748 326 C610 372 430 468 356 670"/>
-  <path class="connector" d="M820 395 C760 510 706 620 670 760"/>
-  <path class="connector" d="M902 394 C970 502 1040 598 1112 705"/>
-  <path class="connector" d="M956 252 C1068 210 1140 185 1170 182"/>
-  <path class="connector" d="M1340 240 C1344 260 1345 285 1345 315"/>
-  <path class="connector-soft" d="M1345 435 C1345 468 1342 490 1340 515"/>
-  <path class="connector" d="M982 314 C1080 372 1150 452 1170 575"/>
-  <path class="connector" d="M1340 635 C1342 660 1344 690 1348 720"/>
+  <path class="connector" d="M340 170 C372 170 390 170 412 170"/>
+  <path class="connector" d="M772 170 C850 170 866 212 894 246"/>
+  <path class="connector" d="M834 330 C706 354 598 412 490 520"/>
+  <path class="connector" d="M850 384 C706 494 600 616 472 812"/>
+  <path class="connector" d="M964 434 C900 620 814 780 730 900"/>
+  <path class="connector" d="M1074 394 C1212 560 1272 760 1288 980"/>
+  <path class="connector" d="M1106 248 C1218 210 1298 180 1360 162"/>
+  <path class="connector" d="M1562 224 C1562 254 1562 292 1562 330"/>
+  <path class="connector-soft" d="M1560 478 C1560 520 1560 560 1560 600"/>
+  <path class="connector" d="M1526 724 C1536 770 1548 810 1566 846"/>
 
-  <g class="card" transform="translate(70 120)">
-    <rect width="250" height="112" rx="28" fill="#fff5cf" stroke="#d4a23a"/>
-    <text class="title-sm" x="26" y="49">不知道先用哪个 skill</text>
-    <text class="skill" x="26" y="82">从入口先判断当前阶段</text>
+  <g class="card" transform="translate(60 110)">
+    <rect width="280" height="118" rx="30" fill="#fff4ca" stroke="#d1a13c"/>
+    <text class="title-sm" x="28" y="54">不知道先用哪个 skill</text>
+    <text class="skill-sm" x="28" y="89">从入口先判断当前阶段</text>
   </g>
 
-  <g class="card" transform="translate(380 112)">
-    <rect width="320" height="126" rx="30" fill="#ddf5ef" stroke="#2e8c80"/>
-    <text class="title" x="34" y="55">先选工作流</text>
-    <text class="skill" x="34" y="92">using-superpowers</text>
+  <g class="card" transform="translate(412 102)">
+    <rect width="360" height="136" rx="32" fill="#dcf5ef" stroke="#328e82"/>
+    <text class="title" x="34" y="60">先选工作流</text>
+    <text class="skill" x="34" y="104">using-superpowers</text>
   </g>
 
   <g filter="url(#shadow)">
-    <polygon points="850,160 980,285 850,410 720,285" fill="#ffe6a2" stroke="#c88920" stroke-width="4"/>
-    <text class="diamond-title" x="850" y="278" text-anchor="middle">当前最需要什么？</text>
-    <text class="skill-sm" x="850" y="314" text-anchor="middle">按场景切到对应 workflow</text>
+    <polygon points="960,150 1112,290 960,430 808,290" fill="#ffe5a1" stroke="#c78820" stroke-width="4"/>
+    <text class="diamond-title" x="960" y="284" text-anchor="middle">当前最需要什么？</text>
+    <text class="diamond-sub" x="960" y="324" text-anchor="middle">按场景切到对应 workflow</text>
   </g>
 
-  <g class="card" transform="translate(65 465)">
-    <rect width="360" height="126" rx="30" fill="#e6f3ff" stroke="#4c8ec3"/>
-    <text class="title" x="28" y="52">需求分析 / 总体设计</text>
-    <text class="title" x="28" y="84">详细设计</text>
-    <text class="skill" x="28" y="108">brainstorming</text>
+  <g class="card" transform="translate(70 470)">
+    <rect width="410" height="138" rx="32" fill="#e6f2ff" stroke="#4f8dc1"/>
+    <text class="title" x="28" y="56">需求分析 / 总体设计</text>
+    <text class="title" x="28" y="96">详细设计</text>
+    <text class="skill" x="28" y="124">brainstorming</text>
   </g>
 
-  <g class="card" transform="translate(1180 120)">
-    <rect width="330" height="120" rx="30" fill="#ffe7d8" stroke="#de7a3f"/>
-    <text class="title" x="28" y="56">实施计划 / 任务拆解</text>
-    <text class="skill" x="28" y="92">writing-plans</text>
+  <g class="card" transform="translate(1360 100)">
+    <rect width="400" height="124" rx="30" fill="#ffe7d8" stroke="#dd7a41"/>
+    <text class="title" x="30" y="58">实施计划 / 任务拆解</text>
+    <text class="skill" x="30" y="95">writing-plans</text>
   </g>
 
-  <g class="card" transform="translate(1185 315)">
-    <rect width="320" height="120" rx="30" fill="#e7eef7" stroke="#4d6583"/>
-    <text class="title" x="28" y="56">按计划推进实现</text>
-    <text class="skill-sm" x="28" y="92">executing-plans / subagent-driven-development</text>
+  <g class="card" transform="translate(1280 330)">
+    <rect width="500" height="148" rx="32" fill="#e8eef8" stroke="#4d6482"/>
+    <text class="title" x="30" y="60">按计划推进实现</text>
+    <text class="skill-sm" x="30" y="102">executing-plans</text>
+    <text class="skill-sm" x="30" y="132">subagent-driven-development</text>
   </g>
 
-  <g class="card" transform="translate(80 670)">
-    <rect width="320" height="120" rx="30" fill="#ffe4df" stroke="#cc6355"/>
-    <text class="title" x="28" y="56">系统排查问题</text>
-    <text class="skill" x="28" y="92">systematic-debugging</text>
+  <g class="card" transform="translate(100 760)">
+    <rect width="370" height="124" rx="30" fill="#ffe5de" stroke="#cc6657"/>
+    <text class="title" x="28" y="58">系统排查问题</text>
+    <text class="skill" x="28" y="95">systematic-debugging</text>
   </g>
 
-  <g class="card" transform="translate(510 760)">
-    <rect width="320" height="120" rx="30" fill="#e3f5df" stroke="#58915a"/>
-    <text class="title" x="28" y="56">测试先行</text>
-    <text class="skill" x="28" y="92">test-driven-development</text>
+  <g class="card" transform="translate(540 900)">
+    <rect width="380" height="128" rx="30" fill="#e3f5df" stroke="#5a915c"/>
+    <text class="title" x="28" y="58">测试先行</text>
+    <text class="skill" x="28" y="95">test-driven-development</text>
   </g>
 
-  <g class="card" transform="translate(910 705)">
-    <rect width="410" height="128" rx="30" fill="#fff0d9" stroke="#ca8a37"/>
-    <text class="title" x="28" y="54">代码评审 / 修改决策</text>
-    <text class="skill-sm" x="28" y="92">requesting-code-review / receiving-code-review</text>
+  <g class="card" transform="translate(980 980)">
+    <rect width="600" height="154" rx="32" fill="#fff1d8" stroke="#cb8a37"/>
+    <text class="title" x="30" y="58">代码评审 / 修改决策</text>
+    <text class="skill-xs" x="30" y="100">requesting-code-review</text>
+    <text class="skill-xs" x="30" y="128">receiving-code-review</text>
   </g>
 
-  <g class="card" transform="translate(1170 515)">
-    <rect width="340" height="120" rx="30" fill="#ddf2f7" stroke="#3d89a0"/>
-    <text class="title" x="28" y="56">收尾前验证</text>
-    <text class="skill" x="28" y="92">verification-before-completion</text>
+  <g class="card" transform="translate(1310 600)">
+    <rect width="430" height="124" rx="30" fill="#ddf2f7" stroke="#3d89a0"/>
+    <text class="title" x="30" y="58">收尾前验证</text>
+    <text class="skill" x="30" y="95">verification-before-completion</text>
   </g>
 
-  <g class="card" transform="translate(1185 720)">
-    <rect width="330" height="120" rx="30" fill="#eff1ff" stroke="#6671c1"/>
-    <text class="title" x="28" y="56">开发分支收尾</text>
-    <text class="skill" x="28" y="92">finishing-a-development-branch</text>
+  <g class="card" transform="translate(1370 846)">
+    <rect width="390" height="124" rx="30" fill="#eef0ff" stroke="#6571c1"/>
+    <text class="title" x="30" y="58">开发分支收尾</text>
+    <text class="skill-sm" x="30" y="95">finishing-a-development-branch</text>
   </g>
 
-  <g transform="translate(472 395)" filter="url(#shadow)">
-    <rect width="178" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="89" y="28" text-anchor="middle">需求还不清楚</text>
+  <g transform="translate(554 414)" filter="url(#shadow)">
+    <rect width="188" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="94" y="31" text-anchor="middle">需求还不清楚</text>
   </g>
 
-  <g transform="translate(1032 140)" filter="url(#shadow)">
-    <rect width="206" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="103" y="28" text-anchor="middle">方案已定，要拆步骤</text>
+  <g transform="translate(1162 112)" filter="url(#shadow)">
+    <rect width="218" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="109" y="31" text-anchor="middle">方案已定，要拆步骤</text>
   </g>
 
-  <g transform="translate(438 560)" filter="url(#shadow)">
-    <rect width="164" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="82" y="28" text-anchor="middle">问题反复出现</text>
+  <g transform="translate(516 642)" filter="url(#shadow)">
+    <rect width="176" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="88" y="31" text-anchor="middle">问题反复出现</text>
   </g>
 
-  <g transform="translate(618 648)" filter="url(#shadow)">
-    <rect width="136" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="68" y="28" text-anchor="middle">想测试先行</text>
+  <g transform="translate(652 804)" filter="url(#shadow)">
+    <rect width="146" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="73" y="31" text-anchor="middle">想测试先行</text>
   </g>
 
-  <g transform="translate(944 626)" filter="url(#shadow)">
-    <rect width="154" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="77" y="28" text-anchor="middle">想先做评审</text>
+  <g transform="translate(1134 844)" filter="url(#shadow)">
+    <rect width="164" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="82" y="31" text-anchor="middle">想先做评审</text>
   </g>
 
-  <g transform="translate(1094 432)" filter="url(#shadow)">
-    <rect width="172" height="44" rx="22" fill="#ffffff" stroke="#8aa5b0" stroke-width="2"/>
-    <text class="pill-text" x="86" y="28" text-anchor="middle">准备宣布做完</text>
+  <g transform="translate(1188 504)" filter="url(#shadow)">
+    <rect width="182" height="48" rx="24" fill="#ffffff" stroke="#8ca6b0" stroke-width="2"/>
+    <text class="pill-text" x="91" y="31" text-anchor="middle">准备宣布做完</text>
   </g>
 
-  <text class="footer" x="70" y="932">首页使用静态 SVG，方便控制样式；其余说明文档仍保留 Mermaid 源码，后续可继续改。</text>
+  <text class="footer" x="70" y="1206">首页使用静态 SVG，方便控制样式；其余说明文档仍保留 Mermaid 源码，后续可继续改。</text>
 </svg>

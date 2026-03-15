@@ -1,12 +1,12 @@
 # Superpowers Skill Adapters
 
-把 [`obra/superpowers`](https://github.com/obra/superpowers) 这套原版 skill 接到 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 四个 AI 编程工具里，并补上中文触发和中文文档输出。
+把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`，补上中文触发、中文文档输出和更稳的安装更新流程。
 
-它不是把原版 skill 全文翻译成中文。它做的是“保留原版能力，再把中文使用体验补齐”。
+它不是重写一套中文 skill，而是保留上游能力，再把中文使用体验补齐。
 
 下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
-## 一眼看懂：什么时候用哪个 skill
+## 主流程
 
 ![Superpowers 首页主流程图](docs/assets/readme-skill-flow.svg)
 
@@ -16,7 +16,7 @@
 
 - [简化版能力矩阵](docs/compatibility-matrix.md)
 
-## 装上后你会得到什么
+## 功能
 
 - 14 个上游 skill 仍然保留，核心做法还是以上游英文 `SKILL.md` 为准
 - 用中文说“需求分析”“总体设计”“详细设计”“实施计划”“代码审查”“单元测试”“集成测试”等，更容易命中对应 skill
@@ -25,7 +25,7 @@
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
 - 目前支持 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`
 
-## 为什么装起来比较放心
+## 自动备份后安装
 
 - 一次安装、更新或重装，只会生成一个备份批次目录
 - 备份统一进 `~/.superpowers-backups/<时间戳>/...` 或 `<项目根>/.superpowers-backups/<时间戳>/...`
@@ -34,7 +34,7 @@
 - 发现已有安装时会先确认；删不掉旧文件时会直接停下，不会硬装
 - `CodeBuddy` 已有 `language` 配置时不会被硬改
 
-## 默认会产出什么样的文档
+## 默认输出
 
 如果你没有单独指定路径和文件名，常见结果大概会长这样：
 
@@ -55,7 +55,7 @@ docs/
 - 代码、命令、路径、日志、接口字段这些保留原文
 - 能用直白中文讲清楚时，不故意堆太多术语
 
-## 一分钟安装
+## 安装
 
 当前官方支持环境：
 
@@ -91,7 +91,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 - 默认安装名带前缀 `superpowers-`
 - 如果电脑里还没有 `pwsh` 或 `git`，先装 `PowerShell 7` 和 `Git for Windows`
 
-## 让 AI 帮你安装
+## 让 AI 安装
 
 如果你想让别的 AI agent 直接帮你安装，先让它读：
 
@@ -103,7 +103,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 请先阅读这个仓库的 docs/ai-agent-install.md，然后用 User 模式帮我安装到 Cline、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
 ```
 
-## 四个工具怎么用
+## 支持的工具
 
 | 工具 | 你会得到什么 | 细节文档 |
 | --- | --- | --- |
@@ -118,7 +118,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 - 什么时候直接写 `superpowers-writing-plans`
 - 如果这个工具支持命令形式，怎么写成 `/superpowers-writing-plans`
 
-## 想改哪些中文词会触发哪些 skill
+## 自定义触发词
 
 看这里：
 
@@ -130,7 +130,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 
 改完后，重新执行一次安装脚本就会生效。
 
-## 更新到新版本
+## 更新
 
 更新这个适配仓库并重装：
 
@@ -150,7 +150,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path\to\superpowers -Targets All -Scope User
 ```
 
-## 继续看
+## 更多说明
 
 - [给 AI agent 的安装说明](docs/ai-agent-install.md)
 - [简化版能力矩阵](docs/compatibility-matrix.md)
