@@ -1,0 +1,11 @@
+flowchart TD
+    A["不知道先用哪个 skill"] --> B["先选工作流<br/>using-superpowers"]
+    B --> C{"当前最需要什么?"}
+    C -->|需求还不清楚| D["需求分析 / 总体设计 / 详细设计<br/>brainstorming"]
+    C -->|方案已定，要拆步骤| E["实施计划 / 任务拆解<br/>writing-plans"]
+    E --> F["按计划推进实现<br/>executing-plans / subagent-driven-development"]
+    C -->|问题反复出现| G["系统排查问题<br/>systematic-debugging"]
+    C -->|想测试先行| H["测试先行<br/>test-driven-development"]
+    C -->|想先做评审| I["代码评审 / 修改决策<br/>requesting-code-review / receiving-code-review"]
+    C -->|准备宣布做完| J["收尾前验证<br/>verification-before-completion"]
+    J --> K["开发分支收尾<br/>finishing-a-development-branch"]

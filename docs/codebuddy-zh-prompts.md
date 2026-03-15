@@ -4,6 +4,14 @@
 
 重点是让中文对话更稳定地命中对应 skill，同时让产出的计划、评审、总结默认用中文。
 
+## 在 CodeBuddy 里，superpowers 是怎么工作的
+
+- 简单说：`CodeBuddy` 自己就很适合承载 skill 和中文输出规则，但并行任务还是要切干净再做。
+- 这句话的意思是：`CodeBuddy` 自己的 `.codebuddy/skills`、`CODEBUDDY.md` 和语言设置，很适合承载 skill 和中文输出规则，所以单 agent 工作流在这里接得比较自然。
+- 为什么这样：这类工具本身就有适合放 skill 和说明规则的位置，我们就优先借这些原生位置来接，而不是额外再造一套。
+- 但对多 agent / 并行类 skill，我们还是会保守一点，按“隔离工作面拆分 + 主线程整合”来理解。
+- 原因很简单：这样更容易看清每个并行任务改了什么、验证了什么，也更不容易互相覆盖。
+
 ## 先记住 3 种触发方式
 
 ### 1. 自然中文说法
@@ -22,7 +30,7 @@
 - `superpowers-writing-plans`
 - `superpowers-finishing-a-development-branch`
 
-### 3. 如果宿主支持 slash / command 形式
+### 3. 如果这个工具支持 slash / command 形式
 
 也优先写完整名字：
 
@@ -34,15 +42,21 @@
 - `CodeBuddy` 的项目级 skill 结构和 `CODEBUDDY.md` 规则很适合中文触发和中文文档输出
 - 对多代理 / 并行类 skill，当前更适合按“隔离面拆分 + 主线程收口”理解
 
+你可以把它理解成：
+
+- 单 agent 工作流，基本按上游原意用就行
+- 并行类 skill 也能用，但要先把任务切干净
+- 如果 `CodeBuddy` 自己已经有合适的 skill 承载方式，我们优先借它自带的位置，不额外造概念
+
 ## 常用工作流
 
 ```mermaid
 flowchart LR
-    A["brainstorming"] --> B["writing-plans"]
-    B --> C["executing-plans"]
-    C --> D["requesting-code-review"]
-    D --> E["verification-before-completion"]
-    E --> F["finishing-a-development-branch"]
+    A["需求分析 / 方案讨论<br/>brainstorming"] --> B["实施计划<br/>writing-plans"]
+    B --> C["按计划实现<br/>executing-plans"]
+    C --> D["代码评审<br/>requesting-code-review"]
+    D --> E["收尾前验证<br/>verification-before-completion"]
+    E --> F["开发分支收尾<br/>finishing-a-development-branch"]
 ```
 
 ## 启动工作流

@@ -4,6 +4,14 @@
 
 相比 `Cline`，`Droid` 更适合把边界清晰的任务真正委派出去。
 
+## 在 Droid 里，superpowers 是怎么工作的
+
+- 简单说：`Droid` 比较适合真的把独立任务分出去做，但最后还是由主线程统一收口。
+- 这句话的意思是：上游 `superpowers` 里提到的多 agent、委派、并行推进，在 `Droid` 里更接近原意，因为它自己的 `Factory` 委派能力本来就比较顺手。
+- 为什么这样：`Droid` 比较适合把边界清楚、互不重叠的任务真正分给不同 agent 去做，而不是只做并行调研。
+- 但最后还是要求主线程收口，因为跨任务整合、冲突处理、最终验收和是否可以宣布完成，放在主线程更稳。
+- 所以你看到这里经常强调“能真委派，但不要让多个 agent 抢同一批文件”，这不是保守过头，而是为了避免后面难整合。
+
 ## 先记住 3 种触发方式
 
 ### 1. 自然中文说法
@@ -22,7 +30,7 @@
 - `superpowers-subagent-driven-development`
 - `superpowers-verification-before-completion`
 
-### 3. 如果宿主支持 slash / command 形式
+### 3. 如果这个工具支持 slash / command 形式
 
 也优先写完整名字：
 
@@ -34,15 +42,21 @@
 - `Droid` 比 `Cline` 更适合把“目录边界清楚、文件面不重叠”的任务真正分给不同 agent
 - 即使允许并行，最后的整合、冲突处理和收尾判断仍建议由主线程完成
 
+你可以把它理解成：
+
+- 并行类 skill 在 `Droid` 里，通常不是“降级成只做调研”
+- 如果任务边界足够清楚，可以真的并行推进实现
+- 但主线程仍然负责最后拍板、整合和验收
+
 ## 常用工作流
 
 ```mermaid
 flowchart LR
-    A["brainstorming"] --> B["writing-plans"]
-    B --> C["subagent-driven-development"]
-    C --> D["requesting-code-review"]
-    D --> E["verification-before-completion"]
-    E --> F["finishing-a-development-branch"]
+    A["需求分析 / 方案讨论<br/>brainstorming"] --> B["实施计划<br/>writing-plans"]
+    B --> C["拆任务推进开发<br/>subagent-driven-development"]
+    C --> D["代码评审<br/>requesting-code-review"]
+    D --> E["收尾前验证<br/>verification-before-completion"]
+    E --> F["开发分支收尾<br/>finishing-a-development-branch"]
 ```
 
 ## 启动工作流

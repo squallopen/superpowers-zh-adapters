@@ -286,11 +286,11 @@ function Move-LegacyBackupDirectories {
         }
         catch {
             throw (
-                "发现旧版 superpowers 备份目录还留在宿主的 skill 目录里，脚本尝试迁到安全位置但失败了。" +
-                "`n宿主：$HostName" +
+                "发现旧版 superpowers 备份目录还留在工具自己的 skill 目录里，脚本尝试迁到安全位置但失败了。" +
+                "`n工具：$HostName" +
                 "`n原位置：$($legacyDirectory.FullName)" +
                 "`n目标位置：$destinationPath" +
-                "`n请先关闭相关宿主，手工把这个目录移到上面的目标位置后，再重新运行脚本。" +
+                "`n请先关闭相关工具，手工把这个目录移到上面的目标位置后，再重新运行脚本。" +
                 "`n原错误：$($_.Exception.Message)"
             )
         }
@@ -897,7 +897,7 @@ function Append-SkillOverlay {
         $OverlayContent.Trim()
     ) -join "`n"
 
-    Write-TextFileWithRetry -Path $SkillFilePath -Value ($normalized + "`n`n" + $overlaySection + "`n") -Purpose "追加宿主适配说明"
+    Write-TextFileWithRetry -Path $SkillFilePath -Value ($normalized + "`n`n" + $overlaySection + "`n") -Purpose "追加工具适配说明"
 }
 
 function Get-JsonObject {
@@ -968,7 +968,7 @@ function Write-TextFileWithRetry {
 $Purpose 失败，目标文件可能正被其他程序占用：
 $Path
 
-建议先关闭可能正在使用这个文件的程序，例如宿主客户端、文件预览器、搜索索引或安全软件，然后重新执行脚本。
+建议先关闭可能正在使用这个文件的程序，例如相关工具客户端、文件预览器、搜索索引或安全软件，然后重新执行脚本。
 原始错误：$($lastError.Exception.Message)
 "@
 

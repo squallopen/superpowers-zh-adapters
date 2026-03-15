@@ -15,7 +15,9 @@
 - 当前官方只支持 `Windows + PowerShell 7 + Git for Windows`
 - 默认安装到当前用户，不是整台电脑所有账号都生效的全局安装
 - 默认安装名带前缀 `superpowers-`
-- 不要自己猜宿主目录，优先直接调用仓库里的脚本
+- 不要自己猜工具目录，优先直接调用仓库里的脚本
+
+下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
 ## 一句话原则
 
@@ -43,26 +45,26 @@ flowchart TD
     B -->|是| C["运行 install-all.ps1"]
     B -->|不是，想整体更新| D["运行 update-all.ps1"]
     B -->|不是，且要同步原版新版本| E["运行 refresh-upstream-and-reinstall.ps1"]
-    C --> F["安装完成后回报备份目录、版本和宿主"]
+    C --> F["安装完成后回报备份目录、版本和工具"]
     D --> F
     E --> F
 ```
 
 ## 最常用命令
 
-全部宿主，安装到当前用户：
+全部工具，安装到当前用户：
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 ```
 
-全部宿主，安装到当前项目：
+全部工具，安装到当前项目：
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
 ```
 
-只装某一个宿主：
+只装某一个工具：
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
@@ -88,10 +90,10 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 ### 1. 安装到当前用户
 
 ```text
-请先阅读这个仓库的 README.md 和 docs/ai-agent-install.md，然后用 PowerShell 7 帮我安装 superpowers 到 Cline、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装宿主和当前上游版本。
+请先阅读这个仓库的 README.md 和 docs/ai-agent-install.md，然后用 PowerShell 7 帮我安装 superpowers 到 Cline、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
 ```
 
-### 2. 只装某几个宿主
+### 2. 只装某几个工具
 
 ```text
 请先阅读 docs/ai-agent-install.md，然后只帮我安装到 Cline 和 OpenCode。使用仓库自带安装脚本，不要自己猜目录；如果发现已有 superpowers 安装，先明确告诉我会覆盖。
@@ -122,6 +124,6 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 - 本次备份目录
 - 当前已装的上游版本
 - 准备安装的上游版本
-- 实际安装到了哪些宿主
+- 实际安装到了哪些工具
 - 哪些文件被更新了
 - 是否有需要用户手工处理的地方

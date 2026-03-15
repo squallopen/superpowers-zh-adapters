@@ -4,6 +4,14 @@
 
 重点不是“背术语”，而是知道什么时候用自然中文说法，什么时候直接点名 skill。
 
+## 在 Cline 里，superpowers 是怎么工作的
+
+- 简单说：它会把上游 workflow 翻成更适合 `Cline` 的用法，并在高风险步骤上更保守一点。
+- 这句话的意思是：上游 `superpowers` 原本是按 `Claude Code` 写的，我们在 `Cline` 里不是逐字照搬，而是翻成 `Cline` 自己更接近的做法。
+- 为什么这样：`Cline` 能承接大部分规划、调试、TDD、review 工作流，但像可写 subagent、`TodoWrite` 这类上游假设，并不是一模一样的能力边界。
+- 所以在 `Cline` 里，凡是上游要求“多个 agent 直接并行改代码”的地方，我们会保守一点，改成“并行调研 / 并行比选，主线程实施和收尾”。
+- 这不是阉割功能，而是为了少出互相覆盖、上下文跑偏、最后不好收口的问题。
+
 ## 先记住 3 种触发方式
 
 ### 1. 自然中文说法
@@ -24,7 +32,7 @@
 - `superpowers-systematic-debugging`
 - `superpowers-finishing-a-development-branch`
 
-### 3. 如果宿主支持 slash / command 形式
+### 3. 如果这个工具支持 slash / command 形式
 
 也优先写完整名字：
 
@@ -43,15 +51,21 @@
 - 所以 `dispatching-parallel-agents` 和 `subagent-driven-development` 在 Cline 里都更偏“并行调研 + 主线程改代码”
 - 如果你希望输出中文文档，直接写“计划 / 说明 / 结论用中文”就够了
 
+你可以把它理解成：
+
+- 单 agent 工作流，基本都能正常接住
+- 多 agent 工作流，不是不能用，而是按更稳的方式落地
+- 如果 `Cline` 自己没有和上游完全对等的实现，我们优先保留工作流意图，不硬照搬字面动作
+
 ## 常用工作流
 
 ```mermaid
 flowchart LR
-    A["brainstorming"] --> B["writing-plans"]
-    B --> C["executing-plans"]
-    C --> D["requesting-code-review"]
-    D --> E["verification-before-completion"]
-    E --> F["finishing-a-development-branch"]
+    A["需求分析 / 方案讨论<br/>brainstorming"] --> B["实施计划<br/>writing-plans"]
+    B --> C["按计划实现<br/>executing-plans"]
+    C --> D["代码评审<br/>requesting-code-review"]
+    D --> E["收尾前验证<br/>verification-before-completion"]
+    E --> F["开发分支收尾<br/>finishing-a-development-branch"]
 ```
 
 ## 启动工作流

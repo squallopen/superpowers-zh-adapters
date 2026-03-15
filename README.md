@@ -1,24 +1,16 @@
 # Superpowers Skill Adapters
 
-把 [`obra/superpowers`](https://github.com/obra/superpowers) 这套原版 skill 接到 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 四个宿主里，并补上中文触发和中文文档输出。
+把 [`obra/superpowers`](https://github.com/obra/superpowers) 这套原版 skill 接到 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 四个 AI 编程工具里，并补上中文触发和中文文档输出。
 
 它不是把原版 skill 全文翻译成中文。它做的是“保留原版能力，再把中文使用体验补齐”。
 
+下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+
 ## 一眼看懂：什么时候用哪个 skill
 
-```mermaid
-flowchart TD
-    A["不知道先用哪个 skill"] --> B["using-superpowers<br/>先选工作流"]
-    B --> C{"当前最需要什么?"}
-    C -->|需求还不清楚| D["brainstorming<br/>结果：需求分析 / 总体设计 / 详细设计"]
-    C -->|方案已定，要拆步骤| E["writing-plans<br/>结果：实施计划 / 任务拆解"]
-    E --> F["executing-plans 或 subagent-driven-development<br/>结果：按计划推进实现"]
-    C -->|问题反复出现| G["systematic-debugging<br/>结果：根因 / 证据链 / 复现条件"]
-    C -->|想测试先行| H["test-driven-development<br/>结果：失败测试 -> 通过测试"]
-    C -->|想先做评审| I["requesting-code-review 或 receiving-code-review<br/>结果：风险清单 / 修改决策"]
-    C -->|准备宣布做完| J["verification-before-completion<br/>结果：验证结果 / 剩余风险"]
-    J --> K["finishing-a-development-branch<br/>结果：提 PR / 合并 / 保留分支决策"]
-```
+![Superpowers 首页主流程图](docs/assets/readme-skill-flow.svg)
+
+首页这张图改成了静态 SVG，方便做更清楚的视觉层级；对应 Mermaid 源码保留在 [docs/assets/readme-skill-flow.mmd](docs/assets/readme-skill-flow.mmd)。
 
 更详细的 skill 速查，看这里：
 
@@ -83,7 +75,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRoot E:\path\to\project
 ```
 
-只装单个宿主：
+只装单个工具：
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
@@ -111,9 +103,9 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 请先阅读这个仓库的 docs/ai-agent-install.md，然后用 User 模式帮我安装到 Cline、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
 ```
 
-## 四个宿主怎么用
+## 四个工具怎么用
 
-| 宿主 | 你会得到什么 | 细节文档 |
+| 工具 | 你会得到什么 | 细节文档 |
 | --- | --- | --- |
 | `Cline` | 更容易用中文触发 skill，也更容易产出中文计划和评审文档 | [Cline 使用说明](docs/cline-zh-prompts.md) |
 | `Droid` | 中文触发更稳，安装时只改 superpowers 自己那段说明 | [Droid 使用说明](docs/droid-zh-prompts.md) |
@@ -124,7 +116,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 
 - 哪些中文说法更容易命中
 - 什么时候直接写 `superpowers-writing-plans`
-- 如果宿主支持命令形式，怎么写成 `/superpowers-writing-plans`
+- 如果这个工具支持命令形式，怎么写成 `/superpowers-writing-plans`
 
 ## 想改哪些中文词会触发哪些 skill
 

@@ -4,6 +4,14 @@
 
 相比 `Cline`，`OpenCode` 可以更自然地配合自己的 `plan` / `build` agent 使用。
 
+## 在 OpenCode 里，superpowers 是怎么工作的
+
+- 简单说：这里优先借 `OpenCode` 自己已经有的能力来承接 `superpowers` 的 workflow。
+- 这句话的意思是：上游 `superpowers` 虽然是按 `Claude Code` 写的，但到了 `OpenCode` 这里，我们优先借 `OpenCode` 自己已经有的 `skill`、`plan`、`build` 这些能力来承接。
+- 为什么这样：如果 `OpenCode` 自己已经有更顺手、更贴近本地使用习惯的实现，就没必要硬照抄上游那套工具名和动作名。
+- 所以在 `OpenCode` 里，重点是保留上游 workflow 的意图，例如“先分析、再计划、再实现、再验证”，而不是强迫它模仿 `Claude Code` 的字面写法。
+- 并行和分阶段推进也能做，但仍建议把最后整合、验收和收尾放主线程。
+
 ## 先记住 3 种触发方式
 
 ### 1. 自然中文说法
@@ -22,7 +30,7 @@
 - `superpowers-dispatching-parallel-agents`
 - `superpowers-finishing-a-development-branch`
 
-### 3. 如果宿主支持 slash / command 形式
+### 3. 如果这个工具支持 slash / command 形式
 
 也优先写完整名字：
 
@@ -34,15 +42,21 @@
 - `OpenCode` 有自己的 `plan` / `build` 能力，适合阶段拆分
 - 但最终整合、验收和收尾，仍建议放在主线程
 
+你可以把它理解成：
+
+- 这里不是“降级”，而是优先用 `OpenCode` 自己更好的替代实现
+- `superpowers` 负责告诉它该走什么 workflow
+- `OpenCode` 自己的原生能力负责承接规划和实现动作
+
 ## 常用工作流
 
 ```mermaid
 flowchart LR
-    A["brainstorming"] --> B["writing-plans"]
-    B --> C["executing-plans 或 subagent-driven-development"]
-    C --> D["requesting-code-review"]
-    D --> E["verification-before-completion"]
-    E --> F["finishing-a-development-branch"]
+    A["需求分析 / 方案讨论<br/>brainstorming"] --> B["实施计划<br/>writing-plans"]
+    B --> C["按计划推进<br/>executing-plans / subagent-driven-development"]
+    C --> D["代码评审<br/>requesting-code-review"]
+    D --> E["收尾前验证<br/>verification-before-completion"]
+    E --> F["开发分支收尾<br/>finishing-a-development-branch"]
 ```
 
 ## 启动工作流

@@ -54,7 +54,7 @@
 pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope User
 ```
 
-如果你只想刷新某一个宿主：
+如果你只想刷新某一个工具：
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
@@ -75,7 +75,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
 - `superpowers-systematic-debugging`
 - `superpowers-finishing-a-development-branch`
 
-如果宿主支持 slash / command 形式，也优先写完整名字：
+如果这个工具支持 slash / command 形式，也优先写完整名字：
 
 - `/superpowers-writing-plans`
 - `/superpowers-finishing-a-development-branch`

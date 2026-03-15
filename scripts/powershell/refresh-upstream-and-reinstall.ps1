@@ -93,7 +93,7 @@ Confirm-UserMergeAction `
 pwsh .\scripts\powershell\install-all.ps1
 "@ `
     -AssumeYes:$AssumeYes
-Write-Host "开始重新安装到目标宿主..."
+Write-Host "开始重新安装到目标工具..."
 
 & $installScript `
     -Scope $Scope `

@@ -57,9 +57,9 @@ docs/
 - `superpowers-systematic-debugging`
 - `superpowers-finishing-a-development-branch`
 
-### 3. 宿主支持 slash / command 形式时，直接调用
+### 3. 如果你用的工具支持 slash / command，直接调用
 
-如果你的宿主支持 `/...` 这类形式，优先也写完整名字：
+如果你用的工具支持 `/...` 这类形式，优先也写完整名字：
 
 - `/superpowers-writing-plans`
 - `/superpowers-finishing-a-development-branch`
@@ -74,16 +74,16 @@ docs/
 
 ```mermaid
 flowchart LR
-    A["using-superpowers"] --> B["brainstorming"]
-    B --> C["writing-plans"]
-    C --> D["executing-plans 或 subagent-driven-development"]
-    D --> E["test-driven-development"]
-    E --> F["requesting-code-review 或 receiving-code-review"]
-    F --> G["verification-before-completion"]
-    G --> H["finishing-a-development-branch"]
+    A["先选工作流<br/>using-superpowers"] --> B["需求分析 / 方案澄清<br/>brainstorming"]
+    B --> C["实施计划<br/>writing-plans"]
+    C --> D["按计划推进<br/>executing-plans / subagent-driven-development"]
+    D --> E["测试先行<br/>test-driven-development"]
+    E --> F["代码评审<br/>requesting-code-review / receiving-code-review"]
+    F --> G["收尾前验证<br/>verification-before-completion"]
+    G --> H["开发分支收尾<br/>finishing-a-development-branch"]
 ```
 
-## 按宿主看更详细的用法
+## 按工具看更详细的用法
 
 - [Cline 使用说明](cline-zh-prompts.md)
 - [Droid 使用说明](droid-zh-prompts.md)
