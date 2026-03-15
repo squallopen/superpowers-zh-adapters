@@ -24,14 +24,14 @@ flowchart TD
 
 - [简化版能力矩阵](docs/compatibility-matrix.md)
 
-## 这套东西能做什么
+## 装上后你会得到什么
 
-- 保留 14 个原版 skill 主体，核心内容仍以英文 `SKILL.md` 为准
-- 让中文对话更容易触发需求分析、总体设计、详细设计、写计划、TDD、代码审查、收尾等工作流
-- 让计划、评审、总结、方案等文档型输出默认用简体中文，并尽量写得通俗易懂
-- 未指定路径时，文档型文件默认优先放到 `docs/`
-- 未指定文件名时，优先使用中文文档名
-- 支持 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`
+- 14 个上游 skill 仍然保留，核心做法还是以上游英文 `SKILL.md` 为准
+- 用中文说“需求分析”“总体设计”“详细设计”“实施计划”“代码审查”“单元测试”“集成测试”等，更容易命中对应 skill
+- 新建计划、评审、总结、方案这类文档时，默认优先放到 `docs/`
+- 没指定文件名时，默认优先用中文文档名
+- 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
+- 目前支持 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`
 
 ## 为什么装起来比较放心
 
@@ -41,6 +41,27 @@ flowchart TD
 - 安装前会先显示“当前已装版本”和“准备安装版本”
 - 发现已有安装时会先确认；删不掉旧文件时会直接停下，不会硬装
 - `CodeBuddy` 已有 `language` 配置时不会被硬改
+
+## 默认会产出什么样的文档
+
+如果你没有单独指定路径和文件名，常见结果大概会长这样：
+
+```text
+docs/
+  需求分析.md
+  总体设计.md
+  详细设计.md
+  实施计划.md
+  代码评审.md
+```
+
+默认规则是：
+
+- 优先放 `docs/`
+- 优先用中文文件名
+- 正文默认用简体中文
+- 代码、命令、路径、日志、接口字段这些保留原文
+- 能用直白中文讲清楚时，不故意堆太多术语
 
 ## 一分钟安装
 
@@ -74,7 +95,9 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 说明：
 
 - `User` 是当前登录用户，不是整台机器所有账号
+- 不是整台电脑所有用户都生效的“全局安装”
 - 默认安装名带前缀 `superpowers-`
+- 如果电脑里还没有 `pwsh` 或 `git`，先装 `PowerShell 7` 和 `Git for Windows`
 
 ## 让 AI 帮你安装
 
@@ -92,24 +115,16 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 
 | 宿主 | 你会得到什么 | 细节文档 |
 | --- | --- | --- |
-| `Cline` | 中文触发、中文文档输出、专用 rule 文件 | [Cline 使用说明](docs/cline-zh-prompts.md) |
-| `Droid` | 中文触发、overlay、`AGENTS.md` 专用说明段 | [Droid 使用说明](docs/droid-zh-prompts.md) |
-| `OpenCode` | 单文件 skill 入口、资源目录保留、`AGENTS.md` 专用说明段 | [OpenCode 使用说明](docs/opencode-zh-prompts.md) |
-| `CodeBuddy` | 中文触发、`CODEBUDDY.md` 专用说明段、中文语言设置 | [CodeBuddy 使用说明](docs/codebuddy-zh-prompts.md) |
+| `Cline` | 更容易用中文触发 skill，也更容易产出中文计划和评审文档 | [Cline 使用说明](docs/cline-zh-prompts.md) |
+| `Droid` | 中文触发更稳，安装时只改 superpowers 自己那段说明 | [Droid 使用说明](docs/droid-zh-prompts.md) |
+| `OpenCode` | 保留原版 skill 结构，用中文触发也更顺手 | [OpenCode 使用说明](docs/opencode-zh-prompts.md) |
+| `CodeBuddy` | 中文触发、中文文档输出，并尽量不碰你现有的其他设置 | [CodeBuddy 使用说明](docs/codebuddy-zh-prompts.md) |
 
 这些文档里会单独讲：
 
-- 适合怎么触发
-- 什么时候用自然中文说法
-- 什么时候直接点名 `superpowers-writing-plans`
-- 如果宿主支持 slash / command 形式，怎么写成 `/superpowers-writing-plans`
-
-默认文档输出规则现在是：
-
-- 未指定路径时，优先放 `docs/`
-- 未指定文件名时，优先用中文文件名
-- 正文默认用简体中文
-- 技术术语保留准确表达，但整体尽量写得通俗易懂
+- 哪些中文说法更容易命中
+- 什么时候直接写 `superpowers-writing-plans`
+- 如果宿主支持命令形式，怎么写成 `/superpowers-writing-plans`
 
 ## 想改哪些中文词会触发哪些 skill
 
