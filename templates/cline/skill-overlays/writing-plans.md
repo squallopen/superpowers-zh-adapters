@@ -1,0 +1,7 @@
+When producing an implementation plan in this adapter, make the execution prerequisites explicit.
+
+1. Add a short "read before coding" list when the task depends on existing documents. Keep that list scoped to the current task. Prefer the tool's native text-search capability, or whatever retrieval method it judges best, then read only the matching `README` sections plus the relevant plan, design, interface, data-structure, schema, Redis, S3, tech-stack, or operational passages rather than entire unrelated documents. It should start with the repository `README` and any relevant module or service `README`, then include design specs, implementation notes, interface design, data structure or schema notes, Redis design, S3 design, tech stack notes, or operational instructions.
+2. For each implementation slice, include explicit unit-test work. Do not leave tests as an implied follow-up.
+3. If the change crosses module, API, storage, or workflow boundaries and integration testing is feasible in this repository, include an integration-test task or explicitly state why it is not practical.
+4. If the implementation will change documented behavior, interfaces, fields, examples, deployment notes, or operating steps, include explicit documentation backfill tasks.
+5. Make the verification and documentation steps concrete enough that `{{NAME_PREFIX}}executing-plans` can follow them without guessing.

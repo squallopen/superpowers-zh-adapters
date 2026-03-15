@@ -16,3 +16,9 @@ When an upstream skill says `brainstorm -> write-plan -> execute-plan`, map that
 3. Use `{{NAME_PREFIX}}executing-plans` to carry out the plan.
 
 If an upstream workflow assumes write-capable subagents, downgrade that step to parallel investigation plus main-agent execution instead of skipping the workflow entirely.
+
+When the user is still exploring requirements, constraints, trade-offs, overall design, or explicitly asks to think first, prefer `{{NAME_PREFIX}}brainstorming`.
+
+When the user already wants a concrete document deliverable such as an implementation plan, interface design, request/response contract, data structure, table structure, Redis design, S3 design, field descriptions, or an OpenAPI-style skeleton, prefer `{{NAME_PREFIX}}writing-plans` directly. Only use `{{NAME_PREFIX}}brainstorming` first if key decisions are still unresolved.
+
+If design or planning documents are produced, explicitly capture the relevant data structures, interface contracts, field definitions, validation rules, naming conventions, retention rules, and error cases when they matter to the task.
