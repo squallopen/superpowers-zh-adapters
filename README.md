@@ -6,9 +6,9 @@
 
 > 稳定版：[`v0.2.1`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.1)
 >
-> 更严格工程约束测试版：[`v0.2.2-beta.2`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.2-beta.2)
+> 更严格工程约束测试版：[`v0.2.2-beta.3`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.2-beta.3)
 >
-> 如果你希望 AI 在实现前先检索相关资料、实现后补测试和文档，并在交付时给出更完整的结果总结，请优先试用 `v0.2.2-beta.2`。
+> 如果你希望 AI 在实现前先检索相关资料、实现后补测试和文档，并在交付时给出更完整的结果总结，请优先试用 `v0.2.2-beta.3`。
 
 下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
