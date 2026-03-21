@@ -6,7 +6,7 @@
 
 > 稳定版：[`v0.2.2`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.2)
 >
-> 相比 `v0.2.1`，`v0.2.2` 重点加强了：实现前检索、单元测试和集成测试要求、文档回填、结果总结、TODO 顺序规划，以及“按哪一份计划执行”的说明。
+> 相比 `v0.2.1`，`v0.2.2` 重点把流程改成更直接的 `TODO -> 计划 -> 执行`：少反问、少重选范围、少跑偏。
 
 下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
