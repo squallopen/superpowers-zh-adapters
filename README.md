@@ -4,11 +4,11 @@
 
 它不是重写一套中文 skill，而是保留上游能力，再把中文使用体验补齐。
 
-对 `Codex` 这类和上游不完全一比一的宿主，适配层会把危险场景直接约束住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
+像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> 稳定版：[`v0.2.2`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.2)
+> 稳定版：[`v0.3.0`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.0)
 >
-> 相比 `v0.2.1`，`v0.2.2` 重点把流程改成更直接的 `TODO -> 计划 -> 执行`：少反问、少重选范围、少跑偏。
+> 相比 `v0.2.2`，`v0.3.0` 重点补上 `Claude Code` / `Codex` 适配、同步上游到 `superpowers v5.0.6`，并把 `Codex` 的高风险 git 场景改成更安全的硬限制。
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
@@ -58,7 +58,7 @@
 - 安装前会先显示“当前已装版本”和“准备安装版本”
 - 发现已有安装时会先确认；删不掉旧文件时会直接停下，不会硬装
 - `CodeBuddy` 已有 `language` 配置时不会被硬改
-- `Codex` 遇到宿主管理的 linked worktree / detached HEAD，或 sandbox 挡住 branch / push / PR 时，会按适配规则降级或 handoff，不会假装成功
+- `Codex` 如果当前已经在应用自己管理的 linked worktree / detached HEAD 里，或 sandbox 挡住 branch / push / PR，就会改用当前环境能安全执行的做法，不会假装成功
 
 ## 默认输出
 
@@ -96,7 +96,7 @@ S3设计.md
 
 说明：
 
-- 这里说的 `Claude Code` / `Codex` 是支持的宿主工具，不代表这个仓库额外承诺 `Linux` / `macOS` 安装脚本
+- 这里说的 `Claude Code` / `Codex` 是支持的接入工具，不代表这个仓库额外承诺 `Linux` / `macOS` 安装脚本
 - 当前仓库的官方脚本链路仍然只维护 `Windows + PowerShell 7 + Git for Windows`
 
 第一次安装到当前用户：

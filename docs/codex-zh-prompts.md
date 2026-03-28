@@ -2,15 +2,15 @@
 
 这份文档讲的是 `Codex + superpowers` 怎么更顺手地用。
 
-`Codex` 现在可以比较自然地承接 `superpowers`，但它和上游 `Claude Code` 仍然不是完全一比一。差异主要在两处：
+`Codex` 现在可以比较自然地承接 `superpowers`，但有些地方不能直接照搬上游 `Claude Code` 的默认做法。差异主要在两处：
 
 - 上游提到的命名 reviewer agent，在 `Codex` 里更接近“用 `worker` subagent + prompt 模板”来实现
-- `Codex App` 里经常已经处在宿主管理的 linked worktree / detached HEAD 环境，`using-git-worktrees` 和 `finishing-a-development-branch` 不能照字面硬跑
+- `Codex App` 里经常已经处在应用自己管理的 linked worktree / detached HEAD 环境，`using-git-worktrees` 和 `finishing-a-development-branch` 不能照字面硬跑
 
 ## 在 Codex 里，superpowers 是怎么工作的
 
 - 简单说：`Codex` 有原生 skills、原生 subagents，也能比较顺手地承接 `superpowers`。
-- 但和 `Claude Code` 不同，这里要额外注意宿主管理 worktree、受限分支操作和 handoff。
+- 但和 `Claude Code` 不同，这里要额外注意应用已经在管的 worktree、受限分支操作和 handoff。
 - 我们做的事是：把 skill 安装到 `.agents/skills`，再在 `AGENTS.md` 里补一段中文输出和 Codex 兼容约束。
 
 ## 先看这几条
@@ -91,7 +91,7 @@ flowchart LR
 ## 如果当前线程已经在 worktree 里
 
 ```text
-先检查当前是不是宿主管理的 linked worktree / detached HEAD。是的话就不要再建新的 worktree；直接在当前目录做 setup、baseline check 和实现。收尾时如果分支/推送受限，就提交当前工作并给我明确 handoff 信息。
+先检查当前是不是应用自己管理的 linked worktree / detached HEAD。是的话就不要再建新的 worktree；直接在当前目录做 setup、baseline check 和实现。收尾时如果分支/推送受限，就提交当前工作并给我明确 handoff 信息。
 ```
 
 ## 请求代码审查

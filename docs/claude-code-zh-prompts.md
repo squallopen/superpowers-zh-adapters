@@ -2,7 +2,7 @@
 
 这份文档讲的是 `Claude Code + superpowers` 怎么更顺手地用。
 
-和 `Codex`、`OpenCode` 这种需要做更多语义转换的宿主不同，`Claude Code` 本身就最接近上游 `superpowers` 的原始设计。我们这层适配主要补三件事：
+和 `Codex`、`OpenCode` 这种需要多做一层转换的工具不同，`Claude Code` 本身就最接近上游 `superpowers` 的原始设计。我们这层适配主要补三件事：
 
 - 中文触发更稳
 - 中文文档输出更统一
@@ -16,7 +16,7 @@
 
 ## 先看这几条
 
-- `Claude Code` 是当前最接近上游 `superpowers` 原生语义的宿主。
+- `Claude Code` 是当前最接近上游 `superpowers` 原始用法的工具。
 - 中文适配主要通过 `CLAUDE.md` 和 skill 描述里的中文触发提示来生效。
 - 代码、命令、路径、日志和接口名仍然建议保持原文。
 - 文档型输出默认用简体中文；没指定文件名时，优先用中文文档名。
