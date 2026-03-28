@@ -1326,6 +1326,20 @@ function Show-SuperpowersVersionBanner {
     Write-Host ("准备安装版本：  {0}" -f $PlannedVersion)
 }
 
+function Show-StarReminder {
+    [CmdletBinding()]
+    param(
+        [string]$RepositoryUrl = "https://github.com/squallopen/superpowers-zh-adapters"
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RepositoryUrl)) {
+        return
+    }
+
+    Write-Host ""
+    Write-Host ("如果这套中文适配对你有帮助，欢迎顺手点个 Star：{0}" -f $RepositoryUrl)
+}
+
 function Upsert-ManagedBlock {
     [CmdletBinding()]
     param(
@@ -1487,6 +1501,7 @@ Export-ModuleMember -Function @(
     "Save-SuperpowersSourceManifest",
     "Save-SuperpowersInstallMetadata",
     "Show-SuperpowersVersionBanner",
+    "Show-StarReminder",
     "New-ClineChineseTriggerRule",
     "New-DroidChineseTriggerGuide",
     "Upsert-ManagedBlock"

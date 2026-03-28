@@ -23,6 +23,8 @@
 - `scripts/powershell/update-all.ps1`
 - `scripts/powershell/refresh-upstream-and-reinstall.ps1`
 - `scripts/powershell/install-cline.ps1`
+- `scripts/powershell/install-claudecode.ps1`
+- `scripts/powershell/install-codex.ps1`
 - `scripts/powershell/install-droid.ps1`
 - `scripts/powershell/install-opencode.ps1`
 - `scripts/powershell/install-codebuddy.ps1`

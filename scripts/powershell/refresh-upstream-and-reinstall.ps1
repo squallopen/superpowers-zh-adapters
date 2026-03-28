@@ -3,12 +3,16 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
     [string]$Ref = "",
     [string]$NamePrefix = "superpowers-",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ClaudeCodeInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$CodexInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$OpenCodeInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
@@ -101,6 +105,8 @@ Write-Host "开始重新安装到目标工具..."
     -Targets $Targets `
     -VendorRoot $vendorRoot `
     -NamePrefix $NamePrefix `
+    -ClaudeCodeInstallMode $ClaudeCodeInstallMode `
+    -CodexInstallMode $CodexInstallMode `
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `

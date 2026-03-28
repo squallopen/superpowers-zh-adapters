@@ -3,13 +3,17 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$VendorRoot,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
     [switch]$UpdateSource,
     [string]$NamePrefix = "superpowers-",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ClaudeCodeInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$CodexInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$OpenCodeInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
@@ -40,7 +44,7 @@ $BackupSessionRoot = Resolve-BackupSessionRoot -BaseRoot $backupSessionBase -Bac
 Write-Host ("本次备份目录：{0}" -f $BackupSessionRoot)
 
 $resolvedTargets = if ($Targets -contains "All") {
-    @("Cline", "Droid", "OpenCode", "CodeBuddy")
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
 }
 else {
     $Targets | Select-Object -Unique
@@ -54,6 +58,36 @@ if ($resolvedTargets -contains "Cline") {
         -VendorRoot $VendorRoot `
         -RepositoryUrl $RepositoryUrl `
         -UpdateSource:$UpdateSource `
+        -NamePrefix $NamePrefix `
+        -BackupSessionRoot $BackupSessionRoot `
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
+}
+
+if ($resolvedTargets -contains "ClaudeCode") {
+    & (Join-Path $PSScriptRoot "install-claudecode.ps1") `
+        -Scope $Scope `
+        -ProjectRoot $ProjectRoot `
+        -SourcePath $SourcePath `
+        -VendorRoot $VendorRoot `
+        -RepositoryUrl $RepositoryUrl `
+        -UpdateSource:$UpdateSource `
+        -InstallMode $ClaudeCodeInstallMode `
+        -NamePrefix $NamePrefix `
+        -BackupSessionRoot $BackupSessionRoot `
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
+}
+
+if ($resolvedTargets -contains "Codex") {
+    & (Join-Path $PSScriptRoot "install-codex.ps1") `
+        -Scope $Scope `
+        -ProjectRoot $ProjectRoot `
+        -SourcePath $SourcePath `
+        -VendorRoot $VendorRoot `
+        -RepositoryUrl $RepositoryUrl `
+        -UpdateSource:$UpdateSource `
+        -InstallMode $CodexInstallMode `
         -NamePrefix $NamePrefix `
         -BackupSessionRoot $BackupSessionRoot `
         -Force:$Force `
@@ -74,6 +108,8 @@ if ($resolvedTargets -contains "Droid") {
         -Force:$Force `
         -AssumeYes:$AssumeYes
 }
+
+Show-StarReminder
 
 if ($resolvedTargets -contains "OpenCode") {
     & (Join-Path $PSScriptRoot "install-opencode.ps1") `

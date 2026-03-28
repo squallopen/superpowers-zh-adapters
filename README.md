@@ -1,14 +1,16 @@
 # Superpowers Skill Adapters
 
-把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`，补上中文触发、中文文档输出和更稳的安装更新流程。
+把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`，补上中文触发、中文文档输出和更稳的安装更新流程。
 
 它不是重写一套中文 skill，而是保留上游能力，再把中文使用体验补齐。
+
+对 `Codex` 这类和上游不完全一比一的宿主，适配层会把危险场景直接约束住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
 > 稳定版：[`v0.2.2`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.2.2)
 >
 > 相比 `v0.2.1`，`v0.2.2` 重点把流程改成更直接的 `TODO -> 计划 -> 执行`：少反问、少重选范围、少跑偏。
 
-下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
 ## 主流程
 
@@ -27,7 +29,8 @@
 - 新建计划、评审、总结、方案这类文档时，优先放到仓库里原本就放文档的位置；如果项目里没有明显约定，再选一个清晰、好找的位置
 - 没指定文件名时，默认优先用中文文档名
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
-- 目前支持 `Cline`、`Droid`、`OpenCode`、`CodeBuddy`
+- 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`
+- vendored 上游 `obra/superpowers` 当前已同步到 `v5.0.6`
 
 ## 核心 Skill 怎么理解
 
@@ -51,10 +54,11 @@
 
 - 一次安装、更新或重装，只会生成一个备份批次目录
 - 备份统一进 `~/.superpowers-backups/<时间戳>/...` 或 `<项目根>/.superpowers-backups/<时间戳>/...`
-- `AGENTS.md` 和 `CODEBUDDY.md` 只更新本适配仓库写入的专用说明段，不整文件覆盖
+- `CLAUDE.md`、`AGENTS.md` 和 `CODEBUDDY.md` 只更新本适配仓库写入的专用说明段，不整文件覆盖
 - 安装前会先显示“当前已装版本”和“准备安装版本”
 - 发现已有安装时会先确认；删不掉旧文件时会直接停下，不会硬装
 - `CodeBuddy` 已有 `language` 配置时不会被硬改
+- `Codex` 遇到宿主管理的 linked worktree / detached HEAD，或 sandbox 挡住 branch / push / PR 时，会按适配规则降级或 handoff，不会假装成功
 
 ## 默认输出
 
@@ -90,6 +94,11 @@ S3设计.md
 - `PowerShell 7`，命令是 `pwsh`
 - `Git for Windows`
 
+说明：
+
+- 这里说的 `Claude Code` / `Codex` 是支持的宿主工具，不代表这个仓库额外承诺 `Linux` / `macOS` 安装脚本
+- 当前仓库的官方脚本链路仍然只维护 `Windows + PowerShell 7 + Git for Windows`
+
 第一次安装到当前用户：
 
 ```powershell
@@ -106,6 +115,8 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets ClaudeCode -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Codex -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
@@ -127,7 +138,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 你可以直接把这句提示词发给它：
 
 ```text
-请先阅读这个仓库的 docs/ai-agent-install.md，然后用 User 模式帮我安装到 Cline、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
+请先阅读这个仓库的 docs/ai-agent-install.md，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
 ```
 
 ## 支持的工具
@@ -135,6 +146,8 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 | 工具 | 你会得到什么 | 细节文档 |
 | --- | --- | --- |
 | `Cline` | 更容易用中文触发 skill，也更容易产出中文计划和评审文档 | [Cline 使用说明](docs/cline-zh-prompts.md) |
+| `Claude Code` | 最接近上游原生 workflow，用中文触发和中文文档输出更顺手 | [Claude Code 使用说明](docs/claude-code-zh-prompts.md) |
+| `Codex` | 保留原生 skill / subagent 能力，并对 worktree / 分支收尾场景加硬限制，避免假兼容 | [Codex 使用说明](docs/codex-zh-prompts.md) |
 | `Droid` | 中文触发更稳，安装时只改 superpowers 自己那段说明 | [Droid 使用说明](docs/droid-zh-prompts.md) |
 | `OpenCode` | 保留原版 skill 结构，用中文触发也更顺手 | [OpenCode 使用说明](docs/opencode-zh-prompts.md) |
 | `CodeBuddy` | 中文触发、中文文档输出，并尽量不碰你现有的其他设置 | [CodeBuddy 使用说明](docs/codebuddy-zh-prompts.md) |
@@ -143,7 +156,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 
 - 哪些中文说法更容易命中
 - 什么时候直接写 `superpowers-writing-plans`
-- 如果这个工具支持命令形式，怎么写成 `/superpowers-writing-plans`
+- 如果这个工具支持显式调用形式，怎么写成 `/superpowers-writing-plans` 或 `$superpowers-writing-plans`
 
 ## 自定义触发词
 
@@ -182,6 +195,8 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - [给 AI agent 的安装说明](docs/ai-agent-install.md)
 - [简化版能力矩阵](docs/compatibility-matrix.md)
 - [中文使用总览](docs/zh-cn-usage-guide.md)
+- [Claude Code 使用说明](docs/claude-code-zh-prompts.md)
+- [Codex 使用说明](docs/codex-zh-prompts.md)
 - [自定义中文触发词](docs/customize-triggers.md)
 - [贡献与维护说明](CONTRIBUTING.md)
 - [发布到 GitHub](docs/publishing-to-github.md)

@@ -2,7 +2,7 @@
 
 这个仓库不是在“重写一套中文 superpowers”。
 
-下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
 维护时请始终按下面这条边界来做：
 
@@ -26,7 +26,7 @@
 | `README.md` | 首页落地页，先讲价值、安全和安装入口 |
 | `docs/ai-agent-install.md` | 给 AI agent 和普通用户直接复制的安装说明 |
 | `docs/customize-triggers.md` | 自定义中文触发词的最短说明 |
-| `docs/*-zh-prompts.md` | 四个工具各自的使用方式、示例 prompt 和触发方式 |
+| `docs/*-zh-prompts.md` | 各工具各自的使用方式、示例 prompt 和触发方式 |
 
 ## 脚本目录规范
 
@@ -53,7 +53,7 @@
 - `Cline` 不要占用通用规则文件名，避免撞用户已有的 `00-*`、`10-*` 规则
 - 改动前先自动备份
 - 备份要按“单次执行一个批次目录”来组织：`User` scope 放在 `~/.superpowers-backups/<时间戳>/`，`Project` scope 放在 `<项目根>/.superpowers-backups/<时间戳>/`
-- 同一次执行产生的备份，要在这个批次目录下再按工具分目录，例如 `cline/`、`droid/`、`opencode/`、`codebuddy/`
+- 同一次执行产生的备份，要在这个批次目录下再按工具分目录，例如 `cline/`、`claude-code/`、`codex/`、`droid/`、`opencode/`、`codebuddy/`
 - 工具目录下再按 `skills`、`files`、`legacy-skill-backups` 归类，不能把整包 skill 备份留在 `skills` / `skill` 目录里
 - 如果发现旧版把备份目录留在工具的 `skills` / `skill` 目录里，脚本要先迁走；迁不动就停止并提示用户手工处理
 - 如果遇到旧版遗留文件、格式冲突、或看不准是不是用户自己写的内容，先告诉用户怎么合并，再等用户确认
@@ -65,6 +65,7 @@
 推荐备份这些文件：
 
 - `AGENTS.md`
+- `CLAUDE.md`
 - `CODEBUDDY.md`
 - `.codebuddy/settings.json`
 - `.clinerules/90-superpowers-bootstrap.md`
@@ -137,16 +138,18 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 当前实现方式：
 
 - `Cline` 通过规则文件约束文档输出为简体中文
-- `Droid`、`OpenCode`、`CodeBuddy` 通过 overlay / `AGENTS.md` / `CODEBUDDY.md` 注入约束
+- `Claude Code`、`Droid`、`OpenCode`、`CodeBuddy`、`Codex` 通过 overlay / `CLAUDE.md` / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
 - 未指定路径时，文档型文件默认优先放 `docs/`
 - 文档型输出除了必要技术术语外，尽量写得通俗易懂
 - `Cline` 使用专用规则文件名 `90-superpowers-*.md`，不再占用早期那组通用文件名
-- `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出本适配仓库写入的专用说明段时才会更新；识别不准就停下来
+- `CLAUDE.md` / `AGENTS.md` / `CODEBUDDY.md` 只有在能明确识别出本适配仓库写入的专用说明段时才会更新；识别不准就停下来
 
 如果要改这类行为，先看：
 
 - [templates/cline/rules/10-output-docs-zh-cn.md](templates/cline/rules/10-output-docs-zh-cn.md)
+- [templates/claudecode/CLAUDE.block.md](templates/claudecode/CLAUDE.block.md)
+- [templates/codex/AGENTS.block.md](templates/codex/AGENTS.block.md)
 - [templates/droid/AGENTS.block.md](templates/droid/AGENTS.block.md)
 - [templates/opencode/AGENTS.block.md](templates/opencode/AGENTS.block.md)
 - [templates/codebuddy/CODEBUDDY.block.md](templates/codebuddy/CODEBUDDY.block.md)
@@ -194,6 +197,8 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 至少抽样看下面这些文件是否生成正确：
 
 - `.cline/skills/<skill>/prompt.md`
+- `.claude/skills/<skill>/SKILL.md`
+- `.agents/skills/<skill>/SKILL.md`
 - `.clinerules/90-superpowers-bootstrap.md`
 - `.clinerules/91-superpowers-skill-triggers-zh-cn.md`
 - `.clinerules/92-superpowers-output-docs-zh-cn.md`
@@ -201,7 +206,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - `.opencode/skill/<skill>.md`
 - `.opencode/skill/<skill>/`
 - `.codebuddy/skills/<skill>/SKILL.md`
-- `AGENTS.md` 或 `CODEBUDDY.md`
+- `CLAUDE.md`、`AGENTS.md` 或 `CODEBUDDY.md`
 
 另外要检查：
 
@@ -241,6 +246,7 @@ gh release create v0.x.y --title "v0.x.y <标题>" --notes "<发布说明>"
 - 支持了哪些工具
 - 这次同步到了哪个 upstream 状态
 - 是否新增或调整了中文触发规则
+- 如果提到 `Codex`，要明确写出安全边界：危险场景会被硬限制或降级，不是假装 branch / push / PR、worktree 流程已经成功
 - 是否有“安装层已验证，但 GUI 尚未全量人工回归”的边界
 
 ## 提交风格建议

@@ -17,7 +17,7 @@
 - 默认安装名带前缀 `superpowers-`
 - 不要自己猜工具目录，优先直接调用仓库里的脚本
 
-下文把 `Cline`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
 ## 一句话原则
 
@@ -68,6 +68,8 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 
 ```powershell
 pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets ClaudeCode -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets Codex -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
@@ -90,13 +92,13 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 ### 1. 安装到当前用户
 
 ```text
-请先阅读这个仓库的 README.md 和 docs/ai-agent-install.md，然后用 PowerShell 7 帮我安装 superpowers 到 Cline、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
+请先阅读这个仓库的 README.md 和 docs/ai-agent-install.md，然后用 PowerShell 7 帮我安装 superpowers 到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
 ```
 
 ### 2. 只装某几个工具
 
 ```text
-请先阅读 docs/ai-agent-install.md，然后只帮我安装到 Cline 和 OpenCode。使用仓库自带安装脚本，不要自己猜目录；如果发现已有 superpowers 安装，先明确告诉我会覆盖。
+请先阅读 docs/ai-agent-install.md，然后只帮我安装到 ClaudeCode、Codex 和 OpenCode。使用仓库自带安装脚本，不要自己猜目录；如果发现已有 superpowers 安装，先明确告诉我会覆盖。
 ```
 
 ### 3. 安装到当前项目

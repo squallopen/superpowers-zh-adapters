@@ -9,6 +9,8 @@
 | 工具 | 14 个原版 skill | 中文触发 | 中文文档输出 | 多代理/并行理解 | 安装与更新安全 | 细节文档 |
 | --- | --- | --- | --- | --- | --- | --- |
 | `Cline` | 支持 | 支持 | 支持 | 更适合并行调研，主线程实施 | 专用 rule 文件，不覆盖其他规则 | [Cline 使用说明](cline-zh-prompts.md) |
+| `Claude Code` | 支持 | 支持 | 支持 | 与上游最贴近，可直接按原生 workflow 跑 | 只更新 `CLAUDE.md` 专用说明段 | [Claude Code 使用说明](claude-code-zh-prompts.md) |
+| `Codex` | 支持 | 支持 | 支持 | 可用原生 subagent，但 worktree / finishing 会按宿主能力硬降级 | 只更新 `AGENTS.md` 专用说明段，并对危险场景加硬限制 | [Codex 使用说明](codex-zh-prompts.md) |
 | `Droid` | 支持 | 支持 | 支持 | 可拆独立工作面并行，主线程收口 | 只更新 `AGENTS.md` 专用说明段 | [Droid 使用说明](droid-zh-prompts.md) |
 | `OpenCode` | 支持 | 支持 | 支持 | 可配合自己的 `plan` / `build` 能力 | 只更新 `AGENTS.md` 专用说明段 | [OpenCode 使用说明](opencode-zh-prompts.md) |
 | `CodeBuddy` | 支持 | 支持 | 支持 | 更适合隔离面并行，主线程整合 | 只更新 `CODEBUDDY.md` 专用说明段 | [CodeBuddy 使用说明](codebuddy-zh-prompts.md) |
@@ -41,6 +43,8 @@
 
 - [中文使用总览](zh-cn-usage-guide.md)
 - [Cline 使用说明](cline-zh-prompts.md)
+- [Claude Code 使用说明](claude-code-zh-prompts.md)
+- [Codex 使用说明](codex-zh-prompts.md)
 - [Droid 使用说明](droid-zh-prompts.md)
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)

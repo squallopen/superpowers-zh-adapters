@@ -111,6 +111,8 @@ flowchart LR
 ## 按工具看更详细的用法
 
 - [Cline 使用说明](cline-zh-prompts.md)
+- [Claude Code 使用说明](claude-code-zh-prompts.md)
+- [Codex 使用说明](codex-zh-prompts.md)
 - [Droid 使用说明](droid-zh-prompts.md)
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)

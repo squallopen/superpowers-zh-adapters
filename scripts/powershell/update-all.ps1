@@ -3,12 +3,16 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$VendorRoot,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
     [string]$NamePrefix = "superpowers-",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ClaudeCodeInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$CodexInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$OpenCodeInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
@@ -81,6 +85,7 @@ Confirm-UserMergeAction `
 1. 先更新这个适配仓库本身
 2. 再把你机器上已经装过的 superpowers skill 按新版本重新覆盖一遍
 3. 如需修改以下文件，脚本会自动备份后再修改：
+   - `CLAUDE.md`
    - `AGENTS.md`
    - `CODEBUDDY.md`
    - Cline 的 3 个专用规则文件
@@ -98,6 +103,8 @@ pwsh .\scripts\powershell\install-all.ps1
     -VendorRoot $VendorRoot `
     -RepositoryUrl $RepositoryUrl `
     -NamePrefix $NamePrefix `
+    -ClaudeCodeInstallMode $ClaudeCodeInstallMode `
+    -CodexInstallMode $CodexInstallMode `
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `

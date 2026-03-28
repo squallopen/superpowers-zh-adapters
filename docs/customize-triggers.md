@@ -65,6 +65,8 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
 如果你还改了输出规则，比如想把默认文档目录从 `docs/` 改成别的地方，记得同时调整这些模板：
 
 - [templates/cline/rules/10-output-docs-zh-cn.md](../templates/cline/rules/10-output-docs-zh-cn.md)
+- [templates/claudecode/CLAUDE.block.md](../templates/claudecode/CLAUDE.block.md)
+- [templates/codex/AGENTS.block.md](../templates/codex/AGENTS.block.md)
 - [templates/droid/AGENTS.block.md](../templates/droid/AGENTS.block.md)
 - [templates/opencode/AGENTS.block.md](../templates/opencode/AGENTS.block.md)
 - [templates/codebuddy/CODEBUDDY.block.md](../templates/codebuddy/CODEBUDDY.block.md)
