@@ -6,9 +6,9 @@
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> 稳定版：[`v0.3.0`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.0)
+> 稳定版：[`v0.3.1`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.1)
 >
-> 相比 `v0.2.2`，`v0.3.0` 重点补上 `Claude Code` / `Codex` 适配、同步上游到 `superpowers v5.0.6`，并把 `Codex` 的高风险 git 场景改成更安全的硬限制。
+> `v0.3.1` 主要让 AI 安装更便捷。
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
@@ -31,6 +31,28 @@
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
 - 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`
 - vendored 上游 `obra/superpowers` 当前已同步到 `v5.0.6`
+
+## 让 AI 安装
+
+如果你想让别的 AI agent 直接帮你安装，先让它读：
+
+- [给 AI agent 的安装说明](docs/ai-agent-install.md)
+
+如果 AI 是直接从仓库首页开始看的，就让它继续看上面的安装说明链接；如果它已经打开安装说明文档，就直接按文档里的规则执行，不需要反复来回读同一篇文档。
+
+仓库地址是：
+
+- `https://github.com/squallopen/superpowers-zh-adapters.git`
+
+安装说明文档直链是：
+
+- `https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md`
+
+你可以直接把这句提示词发给它：
+
+```text
+请阅读 https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md ，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
+```
 
 ## 核心 Skill 怎么理解
 
@@ -128,18 +150,6 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 - 不是整台电脑所有用户都生效的“全局安装”
 - 默认安装名带前缀 `superpowers-`
 - 如果电脑里还没有 `pwsh` 或 `git`，先装 `PowerShell 7` 和 `Git for Windows`
-
-## 让 AI 安装
-
-如果你想让别的 AI agent 直接帮你安装，先让它读：
-
-- [给 AI agent 的安装说明](docs/ai-agent-install.md)
-
-你可以直接把这句提示词发给它：
-
-```text
-请先阅读这个仓库的 docs/ai-agent-install.md，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
-```
 
 ## 支持的工具
 

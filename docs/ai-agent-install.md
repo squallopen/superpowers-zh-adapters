@@ -5,6 +5,16 @@
 - 你要把它发给另一个 AI agent，让它按这里的规则帮你安装
 - 你自己想复制一段 prompt，让 AI 直接帮你装
 
+如果 AI 已经直接打开了这份文档，就把这份文档当成安装规则本身，直接往下执行，不需要再回头要求用户重新发这份 URL。
+
+这个仓库的公开地址是：
+
+- `https://github.com/squallopen/superpowers-zh-adapters.git`
+
+推荐直接发给 AI 读取的文档地址是：
+
+- `https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md`
+
 如果你只是想尽快让 AI 帮你装，先看下面两段就够了：
 
 - 先看“AI agent 应该遵守的安装规则”
@@ -16,6 +26,7 @@
 - 默认安装到当前用户，不是整台电脑所有账号都生效的全局安装
 - 默认安装名带前缀 `superpowers-`
 - 不要自己猜工具目录，优先直接调用仓库里的脚本
+- 如果 AI 能直接读文档 URL，就直接让它读；是否需要 clone 仓库，让它自己决定
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
@@ -29,7 +40,7 @@
 
 ## AI agent 应该遵守的安装规则
 
-1. 先确认当前目录就是这个仓库根目录。
+1. 先找到这个仓库的脚本入口；如果当前不在仓库根目录，就先把仓库取到本地再继续。
 2. 第一次安装，用 `install-all.ps1`。
 3. 已经装过、想整体更新，用 `update-all.ps1`。
 4. 想同步上游仓库新版本，再重装，用 `refresh-upstream-and-reinstall.ps1`。
@@ -51,6 +62,13 @@ flowchart TD
 ```
 
 ## 最常用命令
+
+如果当前机器上还没有这个仓库，先取下来：
+
+```powershell
+git clone https://github.com/squallopen/superpowers-zh-adapters.git
+cd superpowers-zh-adapters
+```
 
 全部工具，安装到当前用户：
 
@@ -89,36 +107,30 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 
 ## 推荐直接发给 AI 的 prompt
 
+下面这些 prompt 默认 AI 已经读完这份安装说明了，所以不再重复写“请阅读这份文档”。
+
 ### 1. 安装到当前用户
 
 ```text
-请先阅读这个仓库的 README.md 和 docs/ai-agent-install.md，然后用 PowerShell 7 帮我安装 superpowers 到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
+用 PowerShell 7 帮我安装 superpowers 到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
 ```
 
 ### 2. 只装某几个工具
 
 ```text
-请先阅读 docs/ai-agent-install.md，然后只帮我安装到 ClaudeCode、Codex 和 OpenCode。使用仓库自带安装脚本，不要自己猜目录；如果发现已有 superpowers 安装，先明确告诉我会覆盖。
+只帮我安装到 ClaudeCode、Codex 和 OpenCode。使用仓库自带安装脚本，不要自己猜目录；如果发现已有 superpowers 安装，先明确告诉我会覆盖。
 ```
 
 ### 3. 安装到当前项目
 
 ```text
-请先阅读 docs/ai-agent-install.md，然后把 superpowers 只安装到当前项目，不要装到用户目录。使用 Project 模式，并在完成后告诉我项目内生成了哪些目录和说明文件。
+把 superpowers 只安装到当前项目，不要装到用户目录。使用 Project 模式，并在完成后告诉我项目内生成了哪些目录和说明文件。
 ```
 
 ### 4. 更新现有安装
 
 ```text
-请先阅读 docs/ai-agent-install.md，然后帮我把现有 superpowers 安装整体更新一遍。先告诉我当前已装版本和准备安装版本，再执行 update-all。不要覆盖非 superpowers 专用说明段；如果会覆盖已有安装，先提醒我确认。
-```
-
-## 推荐发给 AI 的最短版本
-
-如果你只想给 AI 一句最短指令，可以用：
-
-```text
-请阅读 docs/ai-agent-install.md，并按里面的规则帮我安装或更新 superpowers。
+帮我把现有 superpowers 安装整体更新一遍。先告诉我当前已装版本和准备安装版本，再执行 update-all。不要覆盖非 superpowers 专用说明段；如果会覆盖已有安装，先提醒我确认。
 ```
 
 ## AI 装完后，最好回报这些信息
