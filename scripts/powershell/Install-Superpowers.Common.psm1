@@ -1370,6 +1370,9 @@ function Upsert-ManagedBlock {
     }
 
     $existing = Get-Content -LiteralPath $Path -Raw
+    if ($null -eq $existing) {
+        $existing = ""
+    }
     $pattern = "(?s)" + [regex]::Escape($begin) + ".*?" + [regex]::Escape($end)
     $beginCount = [regex]::Matches($existing, [regex]::Escape($begin)).Count
     $endCount = [regex]::Matches($existing, [regex]::Escape($end)).Count

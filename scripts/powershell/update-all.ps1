@@ -35,6 +35,21 @@ Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoun
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
 $resolvedProjectRoot = if ($Scope -eq "Project") { Resolve-AbsolutePath -Path $ProjectRoot } else { $null }
+$resolvedTargets = if ($Targets -contains "All") {
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
+}
+else {
+    $Targets | Select-Object -Unique
+}
+$targetDisplayNames = @{
+    Cline = "Cline"
+    ClaudeCode = "Claude Code"
+    Codex = "Codex"
+    Droid = "Droid"
+    OpenCode = "OpenCode"
+    CodeBuddy = "CodeBuddy"
+}
+$resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
 if (-not $SkipRepoPull) {
     Assert-RequiredCommand -CommandName "git" -InstallHint "请先安装 Git for Windows：https://git-scm.com/download/win ，然后重新打开 PowerShell。"
@@ -76,6 +91,16 @@ else {
     Write-Host "准备安装的 superpowers 原仓库版本：未知（当前还拿不到源目录版本信息）"
 }
 
+Write-Host ("本次目标工具：{0}" -f ($resolvedTargetLabels -join "、"))
+if ($Targets -contains "All") {
+    if ($PSBoundParameters.ContainsKey("Targets")) {
+        Write-Host "当前使用的是 -Targets All，会更新全部支持工具。"
+    }
+    else {
+        Write-Host "当前未单独指定 -Targets，默认会更新全部支持工具。"
+    }
+}
+
 Confirm-UserMergeAction `
     -Title "即将按更新方式覆盖已安装的 superpowers 内容" `
     -Guidance @"
@@ -83,12 +108,14 @@ Confirm-UserMergeAction `
 
 继续后会发生这些事：
 1. 先更新这个适配仓库本身
-2. 再把你机器上已经装过的 superpowers skill 按新版本重新覆盖一遍
+2. 再把本次目标工具（$($resolvedTargetLabels -join "、")）里已经装过的 superpowers skill 按新版本重新覆盖一遍
 3. 如需修改以下文件，脚本会自动备份后再修改：
    - `CLAUDE.md`
    - `AGENTS.md`
    - `CODEBUDDY.md`
    - Cline 的 3 个专用规则文件
+
+如果你不传 `-Targets`，默认就是全部支持工具。
 
 如果第一次安装，请改用：
 pwsh .\scripts\powershell\install-all.ps1
@@ -98,7 +125,7 @@ pwsh .\scripts\powershell\install-all.ps1
 & (Join-Path $PSScriptRoot "install-all.ps1") `
     -Scope $Scope `
     -ProjectRoot $ProjectRoot `
-    -Targets $Targets `
+    -Targets $resolvedTargets `
     -SourcePath $SourcePath `
     -VendorRoot $VendorRoot `
     -RepositoryUrl $RepositoryUrl `

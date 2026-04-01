@@ -49,6 +49,25 @@ $resolvedTargets = if ($Targets -contains "All") {
 else {
     $Targets | Select-Object -Unique
 }
+$targetDisplayNames = @{
+    Cline = "Cline"
+    ClaudeCode = "Claude Code"
+    Codex = "Codex"
+    Droid = "Droid"
+    OpenCode = "OpenCode"
+    CodeBuddy = "CodeBuddy"
+}
+$resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
+
+Write-Host ("本次目标工具：{0}" -f ($resolvedTargetLabels -join "、"))
+if ($Targets -contains "All") {
+    if ($PSBoundParameters.ContainsKey("Targets")) {
+        Write-Host "当前使用的是 -Targets All，会安装全部支持工具。"
+    }
+    else {
+        Write-Host "当前未单独指定 -Targets，默认会安装全部支持工具。"
+    }
+}
 
 if ($resolvedTargets -contains "Cline") {
     & (Join-Path $PSScriptRoot "install-cline.ps1") `

@@ -6,9 +6,9 @@
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> 稳定版：[`v0.3.2`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.2)
+> 稳定版：[`v0.3.3`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.3)
 >
-> `v0.3.2` 主要是跟上上游 `superpowers v5.0.7`。不是大改，但把这轮 `OpenCode` 修正和上游更新一起带进来了，用起来会更省心。
+> `v0.3.3` 是安装脚本修复版，主要修了说明文件为空时安装会报错的问题，也把全量安装、更新、重装时的目标工具提示写得更清楚了。
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 

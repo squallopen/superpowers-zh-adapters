@@ -32,6 +32,21 @@ Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoun
 
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
+$resolvedTargets = if ($Targets -contains "All") {
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
+}
+else {
+    $Targets | Select-Object -Unique
+}
+$targetDisplayNames = @{
+    Cline = "Cline"
+    ClaudeCode = "Claude Code"
+    Codex = "Codex"
+    Droid = "Droid"
+    OpenCode = "OpenCode"
+    CodeBuddy = "CodeBuddy"
+}
+$resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
 $vendorRoot = Join-Path $repoRoot "vendor/superpowers"
 $refreshScript = Join-Path $PSScriptRoot "Refresh-VendoredSuperpowers.ps1"
@@ -82,6 +97,15 @@ if ($extraTriggerNames.Count -gt 0) {
 
 $plannedVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $vendorRoot -RepositoryUrl $RepositoryUrl
 Write-Host ("准备安装的 superpowers 原仓库版本：{0}" -f $plannedVersionInfo["Display"])
+Write-Host ("本次目标工具：{0}" -f ($resolvedTargetLabels -join "、"))
+if ($Targets -contains "All") {
+    if ($PSBoundParameters.ContainsKey("Targets")) {
+        Write-Host "当前使用的是 -Targets All，会刷新并重装全部支持工具。"
+    }
+    else {
+        Write-Host "当前未单独指定 -Targets，默认会刷新并重装全部支持工具。"
+    }
+}
 Write-Host ""
 Confirm-UserMergeAction `
     -Title "即将按刷新上游并重装方式覆盖已安装的 superpowers 内容" `
@@ -91,7 +115,9 @@ Confirm-UserMergeAction `
 继续后会发生这些事：
 1. 先把仓库里的 `vendor/superpowers` 刷到新的上游版本
 2. 顺便检查中文触发配置有没有缺漏
-3. 再把你机器上已经装过的 superpowers skill 按新版本重新覆盖一遍
+3. 再把本次目标工具（$($resolvedTargetLabels -join "、")）里已经装过的 superpowers skill 按新版本重新覆盖一遍
+
+如果你不传 `-Targets`，默认就是全部支持工具。
 
 如果第一次安装，请改用：
 pwsh .\scripts\powershell\install-all.ps1
@@ -102,7 +128,7 @@ Write-Host "开始重新安装到目标工具..."
 & $installScript `
     -Scope $Scope `
     -ProjectRoot $ProjectRoot `
-    -Targets $Targets `
+    -Targets $resolvedTargets `
     -VendorRoot $vendorRoot `
     -NamePrefix $NamePrefix `
     -ClaudeCodeInstallMode $ClaudeCodeInstallMode `
