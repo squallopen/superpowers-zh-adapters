@@ -1,12 +1,12 @@
 {
-  "upstream_tag": "v5.0.6",
-  "upstream_commit_date_text": "2026-03-26 02:08:09 +08:00",
+  "upstream_tag": "v5.0.7",
+  "upstream_commit_date_text": "2026-04-01 03:23:25 +08:00",
   "repository_url": "https://github.com/obra/superpowers.git",
-  "upstream_version_text": "v5.0.6（提交时间 2026-03-26 02:08:09 +08:00，commit eafe962）",
-  "upstream_commit_date": "2026-03-25T11:08:09-07:00",
-  "detected_at": "2026-03-28T22:48:12.0002218+08:00",
+  "upstream_version_text": "v5.0.7（提交时间 2026-04-01 03:23:25 +08:00，commit 1f20bef）",
+  "upstream_commit_date": "2026-03-31T12:23:25-07:00",
+  "detected_at": "2026-04-01T20:58:00+08:00",
   "upstream_ref": "",
-  "upstream_commit": "eafe962b18f6c5dc70fb7c8cc7e83e61f4cdde06",
-  "upstream_commit_short": "eafe962"
+  "upstream_commit": "1f20bef3f59b85ad7b52718f822e37c4478a3ff5",
+  "upstream_commit_short": "1f20bef"
 }
 
