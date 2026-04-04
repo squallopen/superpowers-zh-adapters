@@ -545,10 +545,69 @@ function Get-FrontMatterValue {
     $escapedKey = [regex]::Escape($Key)
     $match = [regex]::Match($FrontMatter, "(?m)^${escapedKey}:\s*(.+?)\s*$")
     if ($match.Success) {
-        return $match.Groups[1].Value.Trim()
+        return Convert-YamlInlineScalarToString -Value $match.Groups[1].Value.Trim()
     }
 
     return $null
+}
+
+function Convert-YamlInlineScalarToString {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Value
+    )
+
+    $trimmed = $Value.Trim()
+    if ($trimmed.Length -lt 2) {
+        return $trimmed
+    }
+
+    if ($trimmed.StartsWith('"') -and $trimmed.EndsWith('"')) {
+        $inner = $trimmed.Substring(1, $trimmed.Length - 2)
+        $builder = New-Object System.Text.StringBuilder
+
+        for ($index = 0; $index -lt $inner.Length; $index++) {
+            $char = $inner[$index]
+            if ($char -eq '\' -and ($index + 1) -lt $inner.Length) {
+                $index += 1
+                switch ($inner[$index]) {
+                    '"' { [void]$builder.Append('"') }
+                    '\' { [void]$builder.Append('\') }
+                    'n' { [void]$builder.Append("`n") }
+                    'r' { [void]$builder.Append("`r") }
+                    't' { [void]$builder.Append("`t") }
+                    default { [void]$builder.Append($inner[$index]) }
+                }
+                continue
+            }
+
+            [void]$builder.Append($char)
+        }
+
+        return $builder.ToString()
+    }
+
+    if ($trimmed.StartsWith("'") -and $trimmed.EndsWith("'")) {
+        return $trimmed.Substring(1, $trimmed.Length - 2).Replace("''", "'")
+    }
+
+    return $trimmed
+}
+
+function Convert-StringToYamlInlineScalar {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Value
+    )
+
+    if ($Value -match '^[A-Za-z0-9][A-Za-z0-9._/-]*$') {
+        return $Value
+    }
+
+    $escaped = $Value.Replace('\', '\\').Replace('"', '\"').Replace("`r", '\r').Replace("`n", '\n').Replace("`t", '\t')
+    return '"' + $escaped + '"'
 }
 
 function Convert-SuperpowersSkillToClinePrompt {
@@ -711,13 +770,14 @@ function Set-MarkdownFrontMatterValue {
 
     $frontMatter = $match.Groups[1].Value
     $body = $match.Groups[2].Value
+    $yamlValue = Convert-StringToYamlInlineScalar -Value $Value
 
     $escapedKey = [regex]::Escape($Key)
     if ([regex]::IsMatch($frontMatter, "(?m)^${escapedKey}:\s*.+$")) {
-        $frontMatter = [regex]::Replace($frontMatter, "(?m)^${escapedKey}:\s*.+$", ("{0}: {1}" -f $Key, $Value), 1)
+        $frontMatter = [regex]::Replace($frontMatter, "(?m)^${escapedKey}:\s*.+$", ("{0}: {1}" -f $Key, $yamlValue), 1)
     }
     else {
-        $frontMatter = ("{0}: {1}" -f $Key, $Value) + "`n" + $frontMatter
+        $frontMatter = ("{0}: {1}" -f $Key, $yamlValue) + "`n" + $frontMatter
     }
 
     $updated = "---`n$frontMatter`n---`n$body"
