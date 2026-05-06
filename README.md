@@ -6,9 +6,7 @@
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> 稳定版：[`v0.3.4`](https://github.com/squallopen/superpowers-zh-adapters/releases/tag/v0.3.4)
->
-> `v0.3.4` 修复了带引号 `description` 的 skill 在追加中文触发词后会把 YAML frontmatter 写坏，导致 `superpowers-brainstorming` 这类 skill “装上了但识别不到”的问题。
+> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v5.1.0`
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
 
@@ -30,7 +28,6 @@
 - 没指定文件名时，默认优先用中文文档名
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
 - 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`
-- vendored 上游 `obra/superpowers` 当前已同步到 `v5.0.7`
 
 ## 让 AI 安装
 
