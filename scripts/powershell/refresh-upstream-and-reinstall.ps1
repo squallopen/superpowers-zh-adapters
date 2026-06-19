@@ -3,7 +3,7 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$RepositoryUrl = "https://github.com/obra/superpowers.git",
@@ -19,6 +19,8 @@ param(
     [string]$DroidInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$CodeBuddyInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ZCodeInstallMode = "Copy",
     [switch]$AssumeYes
 )
 
@@ -33,7 +35,7 @@ Exit-IfUnsupportedPowerShell -ScriptPath $PSCommandPath -BoundParameters $PSBoun
 Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force -DisableNameChecking
 Assert-WindowsOnly
 $resolvedTargets = if ($Targets -contains "All") {
-    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")
 }
 else {
     $Targets | Select-Object -Unique
@@ -45,6 +47,7 @@ $targetDisplayNames = @{
     Droid = "Droid"
     OpenCode = "OpenCode"
     CodeBuddy = "CodeBuddy"
+    ZCode = "ZCode"
 }
 $resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
@@ -136,6 +139,7 @@ Write-Host "开始重新安装到目标工具..."
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `
+    -ZCodeInstallMode $ZCodeInstallMode `
     -Force `
     -AssumeYes:$AssumeYes
 

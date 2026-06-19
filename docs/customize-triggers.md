@@ -70,6 +70,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Cline -Scope User
 - [templates/droid/AGENTS.block.md](../templates/droid/AGENTS.block.md)
 - [templates/opencode/AGENTS.block.md](../templates/opencode/AGENTS.block.md)
 - [templates/codebuddy/CODEBUDDY.block.md](../templates/codebuddy/CODEBUDDY.block.md)
+- [templates/zcode/skill-overlays](../templates/zcode/skill-overlays)
 
 ## 除了自然中文，还可以怎么触发
 

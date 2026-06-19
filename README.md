@@ -1,14 +1,14 @@
 # Superpowers Skill Adapters
 
-把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`，补上中文触发、中文文档输出和更稳的安装更新流程。
+把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`，补上中文触发、中文文档输出和更稳的安装更新流程。
 
 它不是重写一套中文 skill，而是保留上游能力，再把中文使用体验补齐。
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v5.1.0`
+> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v6.0.3`
 
-下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode` 统称为“工具”。
 
 ## 主流程
 
@@ -27,7 +27,7 @@
 - 新建计划、评审、总结、方案这类文档时，优先放到仓库里原本就放文档的位置；如果项目里没有明显约定，再选一个清晰、好找的位置
 - 没指定文件名时，默认优先用中文文档名
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
-- 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`
+- 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`
 
 ## 让 AI 安装
 
@@ -48,7 +48,7 @@
 你可以直接把这句提示词发给它：
 
 ```text
-请阅读 https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md ，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
+请阅读 https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md ，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy、ZCode。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
 ```
 
 ## 核心 Skill 怎么理解
@@ -139,6 +139,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Codex -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets ZCode -Scope User
 ```
 
 说明：
@@ -158,6 +159,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 | `Droid` | 中文触发更稳，安装时只改 superpowers 自己那段说明 | [Droid 使用说明](docs/droid-zh-prompts.md) |
 | `OpenCode` | 保留原版 skill 结构，用中文触发也更顺手 | [OpenCode 使用说明](docs/opencode-zh-prompts.md) |
 | `CodeBuddy` | 中文触发、中文文档输出，并尽量不碰你现有的其他设置 | [CodeBuddy 使用说明](docs/codebuddy-zh-prompts.md) |
+| `ZCode` | 面向智谱 ZCode 的原生 skill 目录安装，不改官方插件缓存和敏感配置 | [ZCode 使用说明](docs/zcode-zh-prompts.md) |
 
 这些文档里会单独讲：
 
@@ -204,6 +206,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - [中文使用总览](docs/zh-cn-usage-guide.md)
 - [Claude Code 使用说明](docs/claude-code-zh-prompts.md)
 - [Codex 使用说明](docs/codex-zh-prompts.md)
+- [ZCode 使用说明](docs/zcode-zh-prompts.md)
 - [自定义中文触发词](docs/customize-triggers.md)
 - [贡献与维护说明](CONTRIBUTING.md)
 - [发布到 GitHub](docs/publishing-to-github.md)

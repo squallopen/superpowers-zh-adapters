@@ -28,7 +28,7 @@
 - 不要自己猜工具目录，优先直接调用仓库里的脚本
 - 如果 AI 能直接读文档 URL，就直接让它读；是否需要 clone 仓库，让它自己决定
 
-下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode` 统称为“工具”。
 
 ## 一句话原则
 
@@ -91,6 +91,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Codex -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets ZCode -Scope User
 ```
 
 已经装过，只想整体更新：
@@ -112,7 +113,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets All -Scope
 ### 1. 安装到当前用户
 
 ```text
-用 PowerShell 7 帮我安装 superpowers 到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
+用 PowerShell 7 帮我安装 superpowers 到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy、ZCode。要求：使用 User 模式；优先调用仓库自带脚本；不要覆盖非 superpowers 专用说明段；安装完成后告诉我备份目录、已安装工具和当前上游版本。
 ```
 
 ### 2. 只装某几个工具

@@ -3,7 +3,7 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$VendorRoot,
@@ -20,6 +20,8 @@ param(
     [string]$DroidInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$CodeBuddyInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ZCodeInstallMode = "Copy",
     [string]$BackupSessionRoot,
     [switch]$Force,
     [switch]$AssumeYes
@@ -44,7 +46,7 @@ $BackupSessionRoot = Resolve-BackupSessionRoot -BaseRoot $backupSessionBase -Bac
 Write-Host ("本次备份目录：{0}" -f $BackupSessionRoot)
 
 $resolvedTargets = if ($Targets -contains "All") {
-    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")
 }
 else {
     $Targets | Select-Object -Unique
@@ -56,6 +58,7 @@ $targetDisplayNames = @{
     Droid = "Droid"
     OpenCode = "OpenCode"
     CodeBuddy = "CodeBuddy"
+    ZCode = "ZCode"
 }
 $resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
@@ -154,6 +157,20 @@ if ($resolvedTargets -contains "CodeBuddy") {
         -RepositoryUrl $RepositoryUrl `
         -UpdateSource:$UpdateSource `
         -InstallMode $CodeBuddyInstallMode `
+        -NamePrefix $NamePrefix `
+        -BackupSessionRoot $BackupSessionRoot `
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
+}
+if ($resolvedTargets -contains "ZCode") {
+    & (Join-Path $PSScriptRoot "install-zcode.ps1") `
+        -Scope $Scope `
+        -ProjectRoot $ProjectRoot `
+        -SourcePath $SourcePath `
+        -VendorRoot $VendorRoot `
+        -RepositoryUrl $RepositoryUrl `
+        -UpdateSource:$UpdateSource `
+        -InstallMode $ZCodeInstallMode `
         -NamePrefix $NamePrefix `
         -BackupSessionRoot $BackupSessionRoot `
         -Force:$Force `

@@ -14,6 +14,7 @@
 | `Droid` | 支持 | 支持 | 支持 | 可拆独立工作面并行，主线程收口 | 只更新 `AGENTS.md` 专用说明段 | [Droid 使用说明](droid-zh-prompts.md) |
 | `OpenCode` | 支持 | 支持 | 支持 | 可配合自己的 `plan` / `build` 能力 | 只更新 `AGENTS.md` 专用说明段 | [OpenCode 使用说明](opencode-zh-prompts.md) |
 | `CodeBuddy` | 支持 | 支持 | 支持 | 更适合隔离面并行，主线程整合 | 只更新 `CODEBUDDY.md` 专用说明段 | [CodeBuddy 使用说明](codebuddy-zh-prompts.md) |
+| `ZCode` | 支持 | 支持 | 支持 | 使用 ZCode 原生 skills；并行能力按 ZCode 当前会话能力执行 | 安装到 `.zcode/skills`，不改官方插件缓存和凭据配置 | [ZCode 使用说明](zcode-zh-prompts.md) |
 
 ## Skill 速查
 
@@ -48,4 +49,5 @@
 - [Droid 使用说明](droid-zh-prompts.md)
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)
+- [ZCode 使用说明](zcode-zh-prompts.md)
 - [自定义中文触发词](customize-triggers.md)

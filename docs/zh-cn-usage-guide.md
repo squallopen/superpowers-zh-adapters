@@ -116,6 +116,7 @@ flowchart LR
 - [Droid 使用说明](droid-zh-prompts.md)
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)
+- [ZCode 使用说明](zcode-zh-prompts.md)
 
 这些文档里会分别讲：
 

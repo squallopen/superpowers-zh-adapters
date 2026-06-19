@@ -28,6 +28,7 @@
 - `scripts/powershell/install-droid.ps1`
 - `scripts/powershell/install-opencode.ps1`
 - `scripts/powershell/install-codebuddy.ps1`
+- `scripts/powershell/install-zcode.ps1`
 
 ## 以后如果有人要补其他系统
 

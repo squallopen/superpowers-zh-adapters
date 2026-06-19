@@ -3,7 +3,7 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$VendorRoot,
@@ -19,6 +19,8 @@ param(
     [string]$DroidInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$CodeBuddyInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$ZCodeInstallMode = "Copy",
     [switch]$Force,
     [switch]$SkipRepoPull,
     [switch]$AssumeYes
@@ -36,7 +38,7 @@ Import-Module (Join-Path $PSScriptRoot "Install-Superpowers.Common.psm1") -Force
 Assert-WindowsOnly
 $resolvedProjectRoot = if ($Scope -eq "Project") { Resolve-AbsolutePath -Path $ProjectRoot } else { $null }
 $resolvedTargets = if ($Targets -contains "All") {
-    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy")
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")
 }
 else {
     $Targets | Select-Object -Unique
@@ -48,6 +50,7 @@ $targetDisplayNames = @{
     Droid = "Droid"
     OpenCode = "OpenCode"
     CodeBuddy = "CodeBuddy"
+    ZCode = "ZCode"
 }
 $resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
@@ -135,5 +138,6 @@ pwsh .\scripts\powershell\install-all.ps1
     -OpenCodeInstallMode $OpenCodeInstallMode `
     -DroidInstallMode $DroidInstallMode `
     -CodeBuddyInstallMode $CodeBuddyInstallMode `
+    -ZCodeInstallMode $ZCodeInstallMode `
     -Force `
     -AssumeYes:$AssumeYes

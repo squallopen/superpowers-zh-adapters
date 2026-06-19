@@ -2,7 +2,7 @@
 
 这个仓库不是在“重写一套中文 superpowers”。
 
-下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode` 统称为“工具”。
 
 维护时请始终按下面这条边界来做：
 
@@ -53,7 +53,7 @@
 - `Cline` 不要占用通用规则文件名，避免撞用户已有的 `00-*`、`10-*` 规则
 - 改动前先自动备份
 - 备份要按“单次执行一个批次目录”来组织：`User` scope 放在 `~/.superpowers-backups/<时间戳>/`，`Project` scope 放在 `<项目根>/.superpowers-backups/<时间戳>/`
-- 同一次执行产生的备份，要在这个批次目录下再按工具分目录，例如 `cline/`、`claude-code/`、`codex/`、`droid/`、`opencode/`、`codebuddy/`
+- 同一次执行产生的备份，要在这个批次目录下再按工具分目录，例如 `cline/`、`claude-code/`、`codex/`、`droid/`、`opencode/`、`codebuddy/`、`zcode/`
 - 工具目录下再按 `skills`、`files`、`legacy-skill-backups` 归类，不能把整包 skill 备份留在 `skills` / `skill` 目录里
 - 如果发现旧版把备份目录留在工具的 `skills` / `skill` 目录里，脚本要先迁走；迁不动就停止并提示用户手工处理
 - 如果遇到旧版遗留文件、格式冲突、或看不准是不是用户自己写的内容，先告诉用户怎么合并，再等用户确认
@@ -138,7 +138,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 当前实现方式：
 
 - `Cline` 通过规则文件约束文档输出为简体中文
-- `Claude Code`、`Droid`、`OpenCode`、`CodeBuddy`、`Codex` 通过 overlay / `CLAUDE.md` / `AGENTS.md` / `CODEBUDDY.md` 注入约束
+- `Claude Code`、`Droid`、`OpenCode`、`CodeBuddy`、`Codex`、`ZCode` 通过 overlay / `CLAUDE.md` / `AGENTS.md` / `CODEBUDDY.md` 注入约束
 - 未指定文档名时，优先使用中文文件名
 - 未指定路径时，文档型文件默认优先放 `docs/`
 - 文档型输出除了必要技术术语外，尽量写得通俗易懂
@@ -153,6 +153,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 - [templates/droid/AGENTS.block.md](templates/droid/AGENTS.block.md)
 - [templates/opencode/AGENTS.block.md](templates/opencode/AGENTS.block.md)
 - [templates/codebuddy/CODEBUDDY.block.md](templates/codebuddy/CODEBUDDY.block.md)
+- [templates/zcode/skill-overlays](templates/zcode/skill-overlays)
 
 ## 新增一个工具适配时怎么做
 
@@ -167,7 +168,7 @@ pwsh .\scripts\powershell\Refresh-VendoredSuperpowers.ps1
 最小落地清单：
 
 1. 新增 `scripts/powershell/install-<host>.ps1`
-2. 在 [scripts/powershell/install-all.ps1](scripts/powershell/install-all.ps1) 和 [scripts/powershell/refresh-upstream-and-reinstall.ps1](scripts/powershell/refresh-upstream-and-reinstall.ps1) 接入
+2. 在 [scripts/powershell/install-all.ps1](scripts/powershell/install-all.ps1)、[scripts/powershell/update-all.ps1](scripts/powershell/update-all.ps1) 和 [scripts/powershell/refresh-upstream-and-reinstall.ps1](scripts/powershell/refresh-upstream-and-reinstall.ps1) 接入
 3. 在 `templates/<host>/` 放工具专属 overlay 或说明块
 4. 在 [docs/compatibility-matrix.md](docs/compatibility-matrix.md) 补兼容说明
 5. 在 [README.md](README.md)、[docs/zh-cn-usage-guide.md](docs/zh-cn-usage-guide.md) 和必要时对应工具文档里补用法
@@ -206,6 +207,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - `.opencode/skill/<skill>.md`
 - `.opencode/skill/<skill>/`
 - `.codebuddy/skills/<skill>/SKILL.md`
+- `.zcode/skills/<skill>/SKILL.md`
 - `CLAUDE.md`、`AGENTS.md` 或 `CODEBUDDY.md`
 
 另外要检查：
