@@ -1,5 +1,34 @@
 # Superpowers Release Notes
 
+## v6.1.1 (2026-07-02)
+
+### Codex
+
+- **Codex no longer re-registers the Claude SessionStart hook.** v6.1.0 removed the Codex hook config and its manifest `hooks` pointer, meaning to stop Codex from installing a SessionStart hook — but with no `hooks` field, Codex fell back to auto-discovering `hooks/hooks.json`, the Claude Code SessionStart hook that the marketplace ships from the repo root, and re-registered it along with its install-time trust prompt. The Codex manifest now declares an explicit empty hooks object (`hooks: {}`), which Codex reads as "no hooks" instead of reaching the auto-discovery fallback. An absent field, `[]`, and an empty inline list all collapse back to the fallback, so the value has to be exactly `{}`.
+- **Removed orphaned Codex session-start dead code.** `hooks/session-start-codex` had no caller once the Codex hook config was deleted, so it and its redundant test cases are gone. The worked shell-hook example in `docs/porting-to-a-new-harness.md` moves from Codex — now native skill discovery with no session-start hook — to Cursor, a live shell-hook harness, and the stale `hooks-codex.json` pointer in `docs/windows/polyglot-hooks.md` is corrected. The Codex plugin category is also fixed to "Developer Tools".
+
+### Packaging
+
+- **New `package-codex-plugin.sh` for building the Codex portal package.** A maintainer script produces a deterministic Codex "portal" archive — `.zip` by default, `tar.gz` on request — that normalizes entry timestamps, preserves executable modes, verifies every packaged skill ships its OpenAI metadata, includes the app and composer icons, and refuses to run against a dirty worktree. The packaged manifest keeps the source `hooks: {}` object so a portal-installed plugin avoids the same SessionStart auto-discovery, and the script can rebuild a byte-identical archive from a saved metadata source. Covered by a new test suite.
+
+## v6.1.0 (2026-06-30)
+
+### Lower Per-Session Token Cost
+
+The `using-superpowers` bootstrap is injected into every session, so its size is paid for constantly. This release trims it and the per-harness references it points to, without dropping behavior-shaping content.
+
+- **Compressed the `using-superpowers` bootstrap.** Replaced the graphviz skill-flow diagram with the prose it encoded, folded the standalone Instruction-Priority section into User Instructions, dropped the per-platform "How to Access Skills" walkthrough, and trimmed the Platform Adaptation pointer to the harnesses that still ship a reference file. The full Red Flags rationalization table and the user-instruction precedence rules are unchanged.
+- **Pruned the per-harness tool-mapping references.** The verbose action-to-tool tables restated guidance modern agents already follow. Each reference file is trimmed to the harness-specific notes that still carry weight — subagent dispatch, task tracking, instructions-file paths — and `claude-code-tools.md` and `copilot-tools.md`, which had nothing harness-specific left, are deleted.
+
+### Codex
+
+- **Codex can install from the marketplace.** Codex marketplace sources expect a `.agents/plugins/marketplace.json` at the marketplace root; the repo only shipped the Claude marketplace file, so Codex could name the marketplace but found no installable plugin entries. A repo-local Codex marketplace manifest now points at the same repository root, so the plugin is installable from Codex.
+- **Codex no longer ships a SessionStart hook.** Codex reliably triggers skills on its own, and the bootstrap hook made the UX worse rather than better. The Codex hook config (`hooks-codex.json`) and its manifest registration are removed.
+
+### Harness Support
+
+- **Gemini CLI support removed.** Google EOLed the Gemini CLI on 2026-06-18; the extension can no longer be installed or updated. Gemini is gone from the install docs, the subagent-capable platform lists, and the eval-harness description, and its tool-mapping reference is deleted.
+
 ## v6.0.3 (2026-06-18)
 
 ### Subagent-Driven Development

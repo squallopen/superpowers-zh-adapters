@@ -6,7 +6,7 @@
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v6.0.3`
+> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v6.1.1`
 
 下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode` 统称为“工具”。
 
