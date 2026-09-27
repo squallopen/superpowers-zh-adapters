@@ -3,7 +3,7 @@ param(
     [ValidateSet("User", "Project")]
     [string]$Scope = "User",
     [string]$ProjectRoot = (Get-Location).Path,
-    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")]
+    [ValidateSet("All", "Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode", "QoderCN")]
     [string[]]$Targets = @("All"),
     [string]$SourcePath,
     [string]$VendorRoot,
@@ -22,6 +22,8 @@ param(
     [string]$CodeBuddyInstallMode = "Copy",
     [ValidateSet("Copy", "Junction")]
     [string]$ZCodeInstallMode = "Copy",
+    [ValidateSet("Copy", "Junction")]
+    [string]$QoderCNInstallMode = "Copy",
     [string]$BackupSessionRoot,
     [switch]$Force,
     [switch]$AssumeYes
@@ -46,7 +48,7 @@ $BackupSessionRoot = Resolve-BackupSessionRoot -BaseRoot $backupSessionBase -Bac
 Write-Host ("本次备份目录：{0}" -f $BackupSessionRoot)
 
 $resolvedTargets = if ($Targets -contains "All") {
-    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode")
+    @("Cline", "ClaudeCode", "Codex", "Droid", "OpenCode", "CodeBuddy", "ZCode", "QoderCN")
 }
 else {
     $Targets | Select-Object -Unique
@@ -59,6 +61,7 @@ $targetDisplayNames = @{
     OpenCode = "OpenCode"
     CodeBuddy = "CodeBuddy"
     ZCode = "ZCode"
+    QoderCN = "Qoder CN"
 }
 $resolvedTargetLabels = $resolvedTargets | ForEach-Object { $targetDisplayNames[$_] }
 
@@ -171,6 +174,20 @@ if ($resolvedTargets -contains "ZCode") {
         -RepositoryUrl $RepositoryUrl `
         -UpdateSource:$UpdateSource `
         -InstallMode $ZCodeInstallMode `
+        -NamePrefix $NamePrefix `
+        -BackupSessionRoot $BackupSessionRoot `
+        -Force:$Force `
+        -AssumeYes:$AssumeYes
+}
+if ($resolvedTargets -contains "QoderCN") {
+    & (Join-Path $PSScriptRoot "install-qodercn.ps1") `
+        -Scope $Scope `
+        -ProjectRoot $ProjectRoot `
+        -SourcePath $SourcePath `
+        -VendorRoot $VendorRoot `
+        -RepositoryUrl $RepositoryUrl `
+        -UpdateSource:$UpdateSource `
+        -InstallMode $QoderCNInstallMode `
         -NamePrefix $NamePrefix `
         -BackupSessionRoot $BackupSessionRoot `
         -Force:$Force `

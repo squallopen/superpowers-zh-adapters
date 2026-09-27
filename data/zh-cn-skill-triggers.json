@@ -6,6 +6,12 @@
     "example_cn": "这个功能先别急着写，先把需求、边界和方案想清楚。"
   },
   {
+    "name": "diagnosing-superpowers",
+    "summary_zh": "诊断 superpowers 会话问题、skill 未触发和成本/耗时异常",
+    "phrases": ["诊断 superpowers", "superpowers 诊断", "排查 superpowers", "skill 没触发", "为什么没触发", "为什么这么慢", "为什么这么贵", "这次会话哪里出了问题", "生成 superpowers bug report"],
+    "example_cn": "这次 superpowers 会话哪里出了问题？帮我带证据诊断一下。"
+  },
+  {
     "name": "dispatching-parallel-agents",
     "summary_zh": "多任务并行拆分、并行代理调度",
     "phrases": ["并行处理", "拆给多个 agent", "多代理并行", "并行推进", "分头处理"],

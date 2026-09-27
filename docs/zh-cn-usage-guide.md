@@ -117,6 +117,7 @@ flowchart LR
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)
 - [ZCode 使用说明](zcode-zh-prompts.md)
+- [Qoder CN 使用说明](qodercn-zh-prompts.md)
 
 这些文档里会分别讲：
 

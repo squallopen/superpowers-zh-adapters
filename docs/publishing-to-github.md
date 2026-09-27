@@ -84,6 +84,12 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 ```
 
+只装 Qoder CN：
+
+```powershell
+pwsh .\scripts\powershell\install-all.ps1 -Targets QoderCN -Scope User
+```
+
 安装到某个项目：
 
 ```powershell
@@ -97,6 +103,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets All -Scope Project -ProjectRo
 - 对 Codex 要明确说明：linked worktree / detached HEAD 和受限 branch / push / PR 这些场景已经做了硬限制，正确行为是留在当前工作区或 commit + handoff，而不是假装上游流程完整跑通。
 - OpenCode 现在按官方 `skill/*.md` 形式安装到 `.opencode/skill`。
 - CodeBuddy 的项目级结构按官方公开文档实现；用户级 `~/.codebuddy` 路径是兼容性镜像写法。
+- Qoder CN 的 User 模式安装到 `~/.qoder-cn/skills`，Project 模式安装到 `<project>/.qoder/skills`，并只更新 `AGENTS.md` 的托管说明段。
 
 ## 对外更新说明
 

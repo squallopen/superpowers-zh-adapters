@@ -1,14 +1,14 @@
 # Superpowers Skill Adapters
 
-把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`，补上中文触发、中文文档输出和更稳的安装更新流程。
+把 [`obra/superpowers`](https://github.com/obra/superpowers) 接到 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`、`Qoder CN`，补上中文触发、中文文档输出和更稳的安装更新流程。
 
 它不是重写一套中文 skill，而是保留上游能力，再把中文使用体验补齐。
 
 像 `Codex` 这种不能直接照搬上游默认做法的工具，我们会把高风险场景直接限制住，例如不盲目再建 worktree、不假装 branch / push / PR 已经成功。
 
-> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v6.3.0`
+> vendored 上游 [`obra/superpowers`](https://github.com/obra/superpowers) 当前已同步到 `v6.4.2`
 
-下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode` 统称为“工具”。
+下文把 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`、`Qoder CN` 统称为“工具”。
 
 ## 主流程
 
@@ -22,12 +22,12 @@
 
 ## 功能
 
-- 14 个上游 skill 仍然保留，核心做法还是以上游英文 `SKILL.md` 为准
+- 15 个上游 skill 仍然保留，核心做法还是以上游英文 `SKILL.md` 为准
 - 用中文说“需求分析”“总体设计”“详细设计”“实施计划”“代码审查”“单元测试”“集成测试”等，更容易命中对应 skill
 - 新建计划、评审、总结、方案这类文档时，优先放到仓库里原本就放文档的位置；如果项目里没有明显约定，再选一个清晰、好找的位置
 - 没指定文件名时，默认优先用中文文档名
 - 文档正文默认用简体中文，技术术语保留准确表达，但整体尽量写得通俗易懂
-- 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`
+- 目前支持 `Cline`、`Claude Code`、`Codex`、`Droid`、`OpenCode`、`CodeBuddy`、`ZCode`、`Qoder CN`
 
 ## 让 AI 安装
 
@@ -48,7 +48,7 @@
 你可以直接把这句提示词发给它：
 
 ```text
-请阅读 https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md ，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy、ZCode。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
+请阅读 https://github.com/squallopen/superpowers-zh-adapters/blob/main/docs/ai-agent-install.md ，然后用 User 模式帮我安装到 Cline、ClaudeCode、Codex、Droid、OpenCode、CodeBuddy、ZCode、QoderCN。不要覆盖非 superpowers 专用说明段；如果需要更新已有安装，先明确告诉我会覆盖哪些内容。
 ```
 
 ## 核心 Skill 怎么理解
@@ -58,6 +58,7 @@
 - `executing-plans`：照着已经写好的计划或设计文档开始实现，最好明确说清楚“按哪一份文档执行”
 - `test-driven-development`：先写失败测试，再写代码
 - `systematic-debugging`：先定位根因，再决定怎么修
+- `diagnosing-superpowers`：superpowers 会话没按预期工作时，用证据说明哪里出了问题
 
 如果你只是想直接产出 `接口设计.md`、`Redis设计.md`、`S3设计.md` 这类文档，一般更接近 `writing-plans`；如果你还在犹豫怎么做、要先比较方案，一般更接近 `brainstorming`。
 
@@ -140,6 +141,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets Droid -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets OpenCode -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets CodeBuddy -Scope User
 pwsh .\scripts\powershell\install-all.ps1 -Targets ZCode -Scope User
+pwsh .\scripts\powershell\install-all.ps1 -Targets QoderCN -Scope User
 ```
 
 说明：
@@ -160,6 +162,7 @@ pwsh .\scripts\powershell\install-all.ps1 -Targets ZCode -Scope User
 | `OpenCode` | 保留原版 skill 结构，用中文触发也更顺手 | [OpenCode 使用说明](docs/opencode-zh-prompts.md) |
 | `CodeBuddy` | 中文触发、中文文档输出，并尽量不碰你现有的其他设置 | [CodeBuddy 使用说明](docs/codebuddy-zh-prompts.md) |
 | `ZCode` | 面向智谱 ZCode 的原生 skill 目录安装，不改官方插件缓存和敏感配置 | [ZCode 使用说明](docs/zcode-zh-prompts.md) |
+| `Qoder CN` | 面向 Qoder CN 的原生 skill 目录安装，User 模式写入 `~/.qoder-cn/skills` | [Qoder CN 使用说明](docs/qodercn-zh-prompts.md) |
 
 这些文档里会单独讲：
 
@@ -207,6 +210,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -SourcePath E:\path
 - [Claude Code 使用说明](docs/claude-code-zh-prompts.md)
 - [Codex 使用说明](docs/codex-zh-prompts.md)
 - [ZCode 使用说明](docs/zcode-zh-prompts.md)
+- [Qoder CN 使用说明](docs/qodercn-zh-prompts.md)
 - [自定义中文触发词](docs/customize-triggers.md)
 - [贡献与维护说明](CONTRIBUTING.md)
 - [发布到 GitHub](docs/publishing-to-github.md)

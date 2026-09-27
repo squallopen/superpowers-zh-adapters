@@ -6,7 +6,7 @@
 
 ## 工具能力矩阵
 
-| 工具 | 14 个原版 skill | 中文触发 | 中文文档输出 | 多代理/并行理解 | 安装与更新安全 | 细节文档 |
+| 工具 | 15 个原版 skill | 中文触发 | 中文文档输出 | 多代理/并行理解 | 安装与更新安全 | 细节文档 |
 | --- | --- | --- | --- | --- | --- | --- |
 | `Cline` | 支持 | 支持 | 支持 | 更适合并行调研，主线程实施 | 专用 rule 文件，不覆盖其他规则 | [Cline 使用说明](cline-zh-prompts.md) |
 | `Claude Code` | 支持 | 支持 | 支持 | 与上游最贴近，可直接按原生 workflow 跑 | 只更新 `CLAUDE.md` 专用说明段 | [Claude Code 使用说明](claude-code-zh-prompts.md) |
@@ -15,12 +15,14 @@
 | `OpenCode` | 支持 | 支持 | 支持 | 可配合自己的 `plan` / `build` 能力 | 只更新 `AGENTS.md` 专用说明段 | [OpenCode 使用说明](opencode-zh-prompts.md) |
 | `CodeBuddy` | 支持 | 支持 | 支持 | 更适合隔离面并行，主线程整合 | 只更新 `CODEBUDDY.md` 专用说明段 | [CodeBuddy 使用说明](codebuddy-zh-prompts.md) |
 | `ZCode` | 支持 | 支持 | 支持 | 使用 ZCode 原生 skills；并行能力按 ZCode 当前会话能力执行 | 安装到 `.zcode/skills`，不改官方插件缓存和凭据配置 | [ZCode 使用说明](zcode-zh-prompts.md) |
+| `Qoder CN` | 支持 | 支持 | 支持 | 使用 Qoder CN 原生 skills；并行能力按 Qoder CN 当前会话能力执行 | User 安装到 `~/.qoder-cn/skills`，Project 安装到 `.qoder/skills`，只更新 `AGENTS.md` 专用说明段 | [Qoder CN 使用说明](qodercn-zh-prompts.md) |
 
 ## Skill 速查
 
 | Skill | 适合什么时候用 | 常见中文触发词 |
 | --- | --- | --- |
 | `brainstorming` | 需求还没聊清楚，先做需求分析、总体设计、详细设计、方案对比，把目标、边界和方向先讲明白。 | `需求分析`、`总体设计`、`详细设计`、`方案对比`、`先想清楚` |
+| `diagnosing-superpowers` | superpowers 会话没按预期工作，例如 skill 没触发、重复劳动、成本或耗时异常，需要带证据诊断。 | `诊断 superpowers`、`skill 没触发`、`为什么这么慢`、`这次会话哪里出了问题` |
 | `dispatching-parallel-agents` | 几个子任务互不依赖，想并行调研、并行推进。 | `并行处理`、`多代理并行`、`拆给多个 agent` |
 | `executing-plans` | 计划已经定了，直接按计划往下做。 | `执行计划`、`按计划做`、`照着计划实现` |
 | `finishing-a-development-branch` | 功能做完准备收尾，判断提 PR、合并、保留还是丢弃。 | `开发收尾`、`准备提 PR`、`合并分支` |
@@ -50,4 +52,5 @@
 - [OpenCode 使用说明](opencode-zh-prompts.md)
 - [CodeBuddy 使用说明](codebuddy-zh-prompts.md)
 - [ZCode 使用说明](zcode-zh-prompts.md)
+- [Qoder CN 使用说明](qodercn-zh-prompts.md)
 - [自定义中文触发词](customize-triggers.md)
