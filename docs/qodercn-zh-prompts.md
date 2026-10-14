@@ -70,7 +70,7 @@ pwsh .\scripts\powershell\refresh-upstream-and-reinstall.ps1 -Targets QoderCN -S
 
 ## 和 Qwen Code 的关系
 
-上游 `obra/superpowers` 在 `v6.4.2` 文档里新增了 Qwen Code 安装说明，但本仓库这次新增的是 Qoder CN 适配。两者不是同一个目标。
+上游 `obra/superpowers` 文档里已经包含 Qwen Code 安装说明，但本仓库新增的是 Qoder CN 适配。两者不是同一个目标。
 
 Qoder CN 这边走本地 skill 目录安装：
 

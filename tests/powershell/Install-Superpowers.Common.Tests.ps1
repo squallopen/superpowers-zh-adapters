@@ -234,6 +234,48 @@ description: "You MUST use this before any creative work - creating features, bu
         -Actual ([string]$qoderUserMetadata.host) `
         -Expected "Qoder CN" `
         -Message "Qoder CN user install metadata should identify the host."
+
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        throw "git is required for the vendored refresh annotated tag test."
+    }
+
+    $annotatedRemoteRoot = Join-Path $tempRoot "annotated-upstream"
+    New-Item -ItemType Directory -Path $annotatedRemoteRoot | Out-Null
+    & git -C $annotatedRemoteRoot init | Out-Null
+    & git -C $annotatedRemoteRoot config user.email "test@example.invalid" | Out-Null
+    & git -C $annotatedRemoteRoot config user.name "Skill Changer Tests" | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $annotatedRemoteRoot "skills/using-superpowers") -Force | Out-Null
+    Set-Content -LiteralPath (Join-Path $annotatedRemoteRoot "skills/using-superpowers/SKILL.md") -NoNewline -Value $fakeQoderSkill
+    Set-Content -LiteralPath (Join-Path $annotatedRemoteRoot "README.md") -NoNewline -Value "# Fake upstream"
+    & git -C $annotatedRemoteRoot add . | Out-Null
+    & git -C $annotatedRemoteRoot commit -m "Initial fake upstream" | Out-Null
+    & git -C $annotatedRemoteRoot tag -a v1.0.0 -m "Annotated release" | Out-Null
+
+    $annotatedTargetRoot = Join-Path $tempRoot "annotated-target"
+    $refreshOutput = & pwsh -NoProfile -File (Join-Path $repoRoot "scripts/powershell/Refresh-VendoredSuperpowers.ps1") `
+        -RepositoryUrl $annotatedRemoteRoot `
+        -Ref "v1.0.0" `
+        -TargetPath $annotatedTargetRoot 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Refresh script annotated tag test failed with exit code $LASTEXITCODE.`n$($refreshOutput -join "`n")"
+    }
+    if (($refreshOutput -join "`n").Contains("is not a commit")) {
+        throw "Refresh script should peel annotated tags before checkout instead of emitting git's 'is not a commit' warning."
+    }
+
+    $annotatedManifestPath = Join-Path $annotatedTargetRoot ".superpowers-source.json"
+    Assert-PathExists `
+        -Path $annotatedManifestPath `
+        -Message "Refresh script should write source metadata after copying an annotated tag."
+    $annotatedManifest = Get-Content -LiteralPath $annotatedManifestPath -Raw | ConvertFrom-Json
+    Assert-Equal `
+        -Actual ([string]$annotatedManifest.upstream_tag) `
+        -Expected "v1.0.0" `
+        -Message "Refresh script should preserve the annotated tag name in source metadata."
+    Assert-Equal `
+        -Actual ([string]$annotatedManifest.upstream_ref) `
+        -Expected "v1.0.0" `
+        -Message "Refresh script should record the requested annotated tag as upstream_ref."
 }
 finally {
     Remove-Item -LiteralPath $tempRoot -Recurse -Force

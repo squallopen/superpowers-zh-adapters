@@ -47,12 +47,49 @@ try {
         $resolvedRef = Resolve-UpstreamRef -RepositoryUrl $RepositoryUrl -RequestedRef $Ref
         Write-Host "正在从上游仓库拉取 superpowers..."
         Write-Host ("将使用上游版本：{0}" -f $resolvedRef)
-        & git clone --depth 1 --branch $resolvedRef $RepositoryUrl $stagingRoot
+        Ensure-Directory -Path $stagingRoot
+        & git init $stagingRoot | Out-Null
         if ($LASTEXITCODE -ne 0) {
-            throw "git clone 执行失败，退出码：$LASTEXITCODE"
+            throw "git init 执行失败，退出码：$LASTEXITCODE"
+        }
+
+        & git -C $stagingRoot remote add origin $RepositoryUrl
+        if ($LASTEXITCODE -ne 0) {
+            throw "git remote add 执行失败，退出码：$LASTEXITCODE"
+        }
+
+        $tagProbe = @(& git ls-remote --tags --refs $RepositoryUrl "refs/tags/$resolvedRef" 2>$null)
+        $isTagRef = ($LASTEXITCODE -eq 0 -and $tagProbe.Count -gt 0)
+
+        if ($isTagRef) {
+            & git -C $stagingRoot fetch --depth 1 origin "refs/tags/${resolvedRef}:refs/tags/${resolvedRef}"
+            if ($LASTEXITCODE -ne 0) {
+                throw "git fetch tag 执行失败，退出码：$LASTEXITCODE"
+            }
+            $checkoutSpec = "refs/tags/$resolvedRef^{commit}"
+        }
+        else {
+            & git -C $stagingRoot fetch --depth 1 origin $resolvedRef
+            if ($LASTEXITCODE -ne 0) {
+                throw "git fetch 执行失败，退出码：$LASTEXITCODE"
+            }
+            $checkoutSpec = "FETCH_HEAD^{commit}"
+        }
+
+        $checkoutCommit = [string](& git -C $stagingRoot rev-parse --verify $checkoutSpec 2>$null | Select-Object -First 1)
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($checkoutCommit)) {
+            throw "无法把 ref 解析到 commit：$resolvedRef"
+        }
+
+        & git -C $stagingRoot -c advice.detachedHead=false checkout --detach $checkoutCommit | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "git checkout 执行失败，退出码：$LASTEXITCODE"
         }
 
         $sourceVersionInfo = Get-SuperpowersSourceVersionInfo -SourceRoot $stagingRoot -RepositoryUrl $RepositoryUrl
+        if ($sourceVersionInfo -and [string]::IsNullOrWhiteSpace([string]$sourceVersionInfo["Ref"])) {
+            $sourceVersionInfo["Ref"] = $resolvedRef
+        }
     }
 
     $nestedGit = Join-Path $stagingRoot ".git"
